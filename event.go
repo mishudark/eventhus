@@ -6,6 +6,8 @@ import (
 	"sync"
 )
 
+var registry = make(map[string]reflect.Type)
+
 //Event stores the data for every event
 type Event struct {
 	ID            string
@@ -16,29 +18,31 @@ type Event struct {
 	Data          interface{}
 }
 
-//EventTypeRegister defines the register for all the events that are Data field child of event struct
-type EventTypeRegister interface {
-	Register(source interface{})
+//Register defines generic methods to create a registry
+type Register interface {
+	Set(source interface{})
 	Get(name string) (interface{}, error)
 	Count() int
+}
+
+//EventTypeRegister defines the register for all the events that are Data field child of event struct
+type EventTypeRegister interface {
+	Register
 	Events() []string
 }
 
 //EventType implements the EventyTypeRegister interface
 type EventType struct {
 	sync.RWMutex
-	registry map[string]reflect.Type
 }
 
-//NewRegister gets a EventyTypeRegister interface
-func NewRegister() EventTypeRegister {
-	return &EventType{
-		registry: make(map[string]reflect.Type),
-	}
+//NewEventRegister gets a EventyTypeRegister interface
+func NewEventRegister() EventTypeRegister {
+	return &EventType{}
 }
 
-//Register a new type
-func (e *EventType) Register(source interface{}) {
+//Set a new type
+func (e *EventType) Set(source interface{}) {
 	e.Lock()
 	defer e.Unlock()
 
@@ -49,7 +53,7 @@ func (e *EventType) Register(source interface{}) {
 	//parts := strings.Split(name, ".")
 	//Registry[parts[1]] = source
 
-	e.registry[name] = rawType
+	registry[name] = rawType
 
 }
 
@@ -58,7 +62,7 @@ func (e *EventType) Get(name string) (interface{}, error) {
 	e.RLock()
 	defer e.RUnlock()
 
-	rawType, ok := e.registry[name]
+	rawType, ok := registry[name]
 	if !ok {
 		return nil, fmt.Errorf("can't find %s in registry", name)
 	}
@@ -69,7 +73,7 @@ func (e *EventType) Get(name string) (interface{}, error) {
 //Count the quantity of events registered
 func (e *EventType) Count() int {
 	e.RLock()
-	count := len(e.registry)
+	count := len(registry)
 	e.RUnlock()
 
 	return count
@@ -78,12 +82,12 @@ func (e *EventType) Count() int {
 //Events registered
 func (e *EventType) Events() []string {
 	var i int
-	values := make([]string, len(e.registry))
+	values := make([]string, len(registry))
 
 	e.RLock()
 	defer e.RUnlock()
 
-	for key := range e.registry {
+	for key := range registry {
 		values[i] = key
 		i++
 	}

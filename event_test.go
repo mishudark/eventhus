@@ -9,13 +9,13 @@ type SubEvent struct {
 
 func TestEventTypeRegister(t *testing.T) {
 	var err error
-	reg := NewRegister()
+	reg := NewEventRegister()
 	count := reg.Count()
 	if count != 0 {
 		t.Error("expected: 0, got: ", count)
 	}
 
-	reg.Register(SubEvent{})
+	reg.Set(SubEvent{})
 	count = reg.Count()
 	if count != 1 {
 		t.Error("expected: 1, got: ", count)
@@ -26,13 +26,9 @@ func TestEventTypeRegister(t *testing.T) {
 		t.Error("expected error, got nil")
 	}
 
-	for i := 0; i < 1000; i++ {
-		go func() {
-			_, err = reg.Get("cqrs.SubEvent")
-			if err != nil {
-				t.Error("expected nil, got", err)
-			}
-		}()
+	_, err = reg.Get("cqrs.SubEvent")
+	if err != nil {
+		t.Error("expected nil, got", err)
 	}
 
 }

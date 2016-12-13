@@ -146,7 +146,7 @@ func (c *Client) Load(aggregateID string) ([]cqrs.Event, error) {
 	}
 
 	events = make([]cqrs.Event, len(aggregate.Events))
-	register := cqrs.NewRegister()
+	register := cqrs.NewEventRegister()
 
 	for i, dbEvent := range aggregate.Events {
 		// Create an event of the correct type.
