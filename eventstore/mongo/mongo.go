@@ -1,7 +1,7 @@
 package mongo
 
 import (
-	"experiments/cqrs/framework"
+	"cqrs"
 	"fmt"
 	"time"
 

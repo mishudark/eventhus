@@ -15,6 +15,7 @@ type AggregateHandler interface {
 	ApplyChange(event Event, commit bool)
 	Uncommited() []Event
 	ClearUncommited()
+	IncrementVersion()
 }
 
 //Uncommited return the events to be saved
@@ -25,4 +26,19 @@ func (b *BaseAggregate) Uncommited() []Event {
 //ClearUncommited the events
 func (b *BaseAggregate) ClearUncommited() {
 	b.Changes = []Event{}
+}
+
+//IncrementVersion ads 1 to the current version
+func (b *BaseAggregate) IncrementVersion() {
+	b.Version++
+}
+
+//ApplyChange increments the version of an aggregate and apply the change itself
+func (b *BaseAggregate) ApplyChange(aggregate AggregateHandler, event Event, commit bool) {
+	//increments the version in event and aggregate
+	//event.Version++
+	aggregate.IncrementVersion()
+
+	//apply the event itself
+	aggregate.ApplyChange(event, commit)
 }

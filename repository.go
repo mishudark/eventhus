@@ -26,3 +26,13 @@ func (r *Repository) Load(aggregate AggregateHandler, ID string) error {
 	aggregate.LoadsFromHistory(events)
 	return nil
 }
+
+//Save the events and publish it to eventbus
+func (r *Repository) Save(aggregate AggregateHandler, version int) error {
+	return r.eventStore.Save(aggregate.Uncommited(), version)
+}
+
+//SafeSave the events without check the version
+func (r *Repository) SafeSave(aggregate AggregateHandler, version int) error {
+	return r.eventStore.SafeSave(aggregate.Uncommited(), version)
+}
