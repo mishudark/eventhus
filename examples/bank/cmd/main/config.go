@@ -13,6 +13,8 @@ func config() (cqrs.CommandBus, error) {
 	//register events
 	reg := cqrs.NewEventRegister()
 	reg.Set(bank.AccountCreated{})
+	reg.Set(bank.DepositPerformed{})
+	reg.Set(bank.WithdrawalPerformed{})
 
 	//event store
 	eventstore, err := mongo.NewClient("localhost", 27017, "bank")
@@ -38,6 +40,8 @@ func config() (cqrs.CommandBus, error) {
 
 	//add commands to commandhandler
 	commandHandler.Add(bank.CreateAccount{}, accountHandler)
+	commandHandler.Add(bank.PerformDeposit{}, accountHandler)
+	commandHandler.Add(bank.PerformWithdrawal{}, accountHandler)
 
 	//commandbus
 	commandBus := async.NewBus(commandHandler, 30)

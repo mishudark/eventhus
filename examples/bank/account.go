@@ -27,6 +27,7 @@ func (a *Account) ApplyChange(event cqrs.Event, commit bool) {
 	switch e := event.Data.(type) {
 	case *AccountCreated:
 		a.Owner = e.Owner
+		a.ID = event.AggregateID
 	case *DepositPerformed:
 		a.Balance += e.Ammount
 	case *WithdrawalPerformed:
@@ -45,7 +46,7 @@ func (a *Account) Handle(command cqrs.Command) error {
 	case CreateAccount:
 		event.AggregateID = c.AggregateID
 		event.Type = "AccountCreated"
-		event.Data = &AccountCreated{"mishudark"}
+		event.Data = &AccountCreated{c.Owner}
 
 	case PerformDeposit:
 		event.Type = "DepositPerformed"
