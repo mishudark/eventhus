@@ -2,11 +2,8 @@ package main
 
 import (
 	"cqrs/examples/bank"
-	"math/rand"
+	"cqrs/utils"
 	"os"
-	"time"
-
-	"github.com/oklog/ulid"
 )
 
 func main() {
@@ -20,10 +17,10 @@ func main() {
 	for i := 0; i < 3000; i++ {
 		go func() {
 			var account bank.CreateAccount
-			t := time.Now()
-			entropy := rand.New(rand.NewSource(t.UnixNano()))
-			uuid := ulid.MustNew(ulid.Timestamp(t), entropy).String()
-			//uuid := "0000XSNJG0MQJHBF4QX1EFD6Y1"
+			uuid, err := utils.UUID()
+			if err != nil {
+				return
+			}
 			account.AggregateID = uuid
 			commandBus.HandleCommand(account)
 		}()
