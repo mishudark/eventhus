@@ -26,7 +26,7 @@ func TestEventTypeRegister(t *testing.T) {
 		t.Error("expected error, got nil")
 	}
 
-	_, err = reg.Get("cqrs.SubEvent")
+	_, err = reg.Get("SubEvent")
 	if err != nil {
 		t.Error("expected nil, got", err)
 	}

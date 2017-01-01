@@ -8,25 +8,25 @@ import (
 
 //CommandHandle defines the contract to handle commands
 type CommandHandle interface {
-	Handle(command interface{}) error
+	Handle(command Command) error
 }
 
 //CommandHandlerRegister stores the handlers for commands
 type CommandHandlerRegister interface {
 	Add(command interface{}, handler CommandHandle)
 	Get(command interface{}) (CommandHandle, error)
-	Handlers() []string
+	//Handlers() []string
 }
 
 //CommandHandler contains a registry of command-handler style
 type CommandHandler struct {
 	sync.RWMutex
 	registry map[string]CommandHandle
-	//repository Repository
+	//repository *Repository
 }
 
 //NewCommandHandler creates a new CommandHandler
-func NewCommandHandler(repository Repository) *CommandHandler {
+func NewCommandHandler() *CommandHandler {
 	return &CommandHandler{
 		registry: make(map[string]CommandHandle),
 		//repository: repository,

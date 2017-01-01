@@ -40,8 +40,8 @@ func NewClient(host string, port int, db string) (cqrs.EventStore, error) {
 		return nil, err
 	}
 
-	session.SetMode(mgo.Strong, true)
-	session.SetSafe(&mgo.Safe{W: 1})
+	session.SetMode(mgo.Monotonic, true)
+	//session.SetSafe(&mgo.Safe{W: 1})
 
 	cli := &Client{
 		db,
@@ -106,9 +106,7 @@ func (c *Client) save(events []cqrs.Event, version int, safe bool) error {
 		}
 
 		if err := sess.DB(c.db).C("events").Update(
-			bson.M{
-				"_id": aggregateID,
-			},
+			query,
 			bson.M{
 				"$push": bson.M{"events": bson.M{"$each": eventsDB}},
 				"$inc":  bson.M{"version": len(eventsDB)},

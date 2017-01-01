@@ -36,9 +36,12 @@ func (b *BaseAggregate) IncrementVersion() {
 //ApplyChange increments the version of an aggregate and apply the change itself
 func (b *BaseAggregate) ApplyChange(aggregate AggregateHandler, event Event, commit bool) {
 	//increments the version in event and aggregate
-	//event.Version++
-	aggregate.IncrementVersion()
+	b.IncrementVersion()
 
 	//apply the event itself
 	aggregate.ApplyChange(event, commit)
+	if commit {
+		event.Version = b.Version
+		b.Changes = append(b.Changes, event)
+	}
 }

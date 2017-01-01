@@ -4,11 +4,11 @@ package cqrs
 //save events and publish it
 type Repository struct {
 	eventStore EventStore
-	eventBus   interface{}
+	eventBus   EventBus
 }
 
 //NewRepository creates a repository wieh a eventstore and eventbus access
-func NewRepository(store EventStore, bus interface{}) *Repository {
+func NewRepository(store EventStore, bus EventBus) *Repository {
 	return &Repository{
 		store,
 		bus,
@@ -30,6 +30,19 @@ func (r *Repository) Load(aggregate AggregateHandler, ID string) error {
 //Save the events and publish it to eventbus
 func (r *Repository) Save(aggregate AggregateHandler, version int) error {
 	return r.eventStore.Save(aggregate.Uncommited(), version)
+}
+
+//PublishEvents to an eventBus
+func (r *Repository) PublishEvents(aggregate AggregateHandler, bucket, subset string) error {
+	var err error
+
+	for _, event := range aggregate.Uncommited() {
+		if err = r.eventBus.Publish(event, bucket, subset); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 //SafeSave the events without check the version

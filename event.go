@@ -3,6 +3,7 @@ package cqrs
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"sync"
 )
 
@@ -50,10 +51,8 @@ func (e *EventType) Set(source interface{}) {
 	name := rawType.String()
 	//we need to extract only the name without the package
 	//name currently follows the format `package.StructName`
-	//parts := strings.Split(name, ".")
-	//Registry[parts[1]] = source
-
-	registry[name] = rawType
+	parts := strings.Split(name, ".")
+	registry[parts[1]] = rawType
 
 }
 
