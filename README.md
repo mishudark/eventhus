@@ -6,7 +6,7 @@ CQRS/ES toolkit for Go.
 See the `bank` in the examples folder, it contains a full example of bank account management
 
 # Event Store
-Currently it has support for `MongoDB` specifically `MongoRocks` which uses RocksDB to improve the mongo performance, `Rethinkdb` is in the scope to be added
+Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be added
 
 # Event Publisher
 `RabbitMQ` and `Nats.io` are supported
