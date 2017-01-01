@@ -1,5 +1,4 @@
-# Event Horizon
-
+# Eventhus
 CQRS/ES toolkit for Go.
 
 # Usage
