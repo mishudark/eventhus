@@ -1,21 +1,21 @@
 package bank
 
 import (
-	"cqrs"
+	"eventhus"
 	"log"
 )
 
 type CommandHandler struct {
-	repository *cqrs.Repository
+	repository *eventhus.Repository
 }
 
-func NewCommandHandler(repository *cqrs.Repository) *CommandHandler {
+func NewCommandHandler(repository *eventhus.Repository) *CommandHandler {
 	return &CommandHandler{
 		repository: repository,
 	}
 }
 
-func (c *CommandHandler) Handle(command cqrs.Command) error {
+func (c *CommandHandler) Handle(command eventhus.Command) error {
 	var err error
 	var version int
 	var account Account

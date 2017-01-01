@@ -1,4 +1,4 @@
-package cqrs
+package eventhus
 
 //Repository is responsible to generate an Aggregate
 //save events and publish it

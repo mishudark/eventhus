@@ -1,4 +1,4 @@
-package cqrs
+package eventhus
 
 //EventStore saves the events from an aggregate
 type EventStore interface {

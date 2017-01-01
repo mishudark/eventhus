@@ -1,7 +1,7 @@
 package mongo
 
 import (
-	"cqrs"
+	"eventhus"
 	"fmt"
 	"time"
 
@@ -34,7 +34,7 @@ type Client struct {
 }
 
 //NewClient generates a new client to access to mongodb
-func NewClient(host string, port int, db string) (cqrs.EventStore, error) {
+func NewClient(host string, port int, db string) (eventhus.EventStore, error) {
 	session, err := mgo.Dial(fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func NewClient(host string, port int, db string) (cqrs.EventStore, error) {
 	return cli, nil
 }
 
-func (c *Client) save(events []cqrs.Event, version int, safe bool) error {
+func (c *Client) save(events []eventhus.Event, version int, safe bool) error {
 	if len(events) == 0 {
 		return nil
 	}
@@ -119,18 +119,18 @@ func (c *Client) save(events []cqrs.Event, version int, safe bool) error {
 }
 
 //SafeSave store the events without check the current version
-func (c *Client) SafeSave(events []cqrs.Event, version int) error {
+func (c *Client) SafeSave(events []eventhus.Event, version int) error {
 	return c.save(events, version, true)
 }
 
 //Save the events ensuring the current version
-func (c *Client) Save(events []cqrs.Event, version int) error {
+func (c *Client) Save(events []eventhus.Event, version int) error {
 	return c.save(events, version, false)
 }
 
 //Load the stored events for an AggregateID
-func (c *Client) Load(aggregateID string) ([]cqrs.Event, error) {
-	var events []cqrs.Event
+func (c *Client) Load(aggregateID string) ([]eventhus.Event, error) {
+	var events []eventhus.Event
 
 	sess := c.session.Copy()
 	defer sess.Close()
@@ -143,8 +143,8 @@ func (c *Client) Load(aggregateID string) ([]cqrs.Event, error) {
 		return events, err
 	}
 
-	events = make([]cqrs.Event, len(aggregate.Events))
-	register := cqrs.NewEventRegister()
+	events = make([]eventhus.Event, len(aggregate.Events))
+	register := eventhus.NewEventRegister()
 
 	for i, dbEvent := range aggregate.Events {
 		// Create an event of the correct type.
@@ -162,8 +162,8 @@ func (c *Client) Load(aggregateID string) ([]cqrs.Event, error) {
 		dbEvent.data = dataType
 		dbEvent.RawData = bson.Raw{}
 
-		// Translate dbEvent to cqrs.Event
-		events[i] = cqrs.Event{
+		// Translate dbEvent to eventhus.Event
+		events[i] = eventhus.Event{
 			AggregateID:   aggregateID,
 			AggregateType: dbEvent.AggregateType,
 			Version:       dbEvent.Version,

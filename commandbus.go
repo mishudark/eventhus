@@ -1,4 +1,4 @@
-package cqrs
+package eventhus
 
 //CommandBus serve as the bridge between commands and command handler
 //it should manage the queues

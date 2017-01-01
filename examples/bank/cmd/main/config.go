@@ -1,17 +1,17 @@
 package main
 
 import (
-	"cqrs"
-	"cqrs/commandbus"
-	"cqrs/eventbus/nats"
-	"cqrs/eventstore/mongo"
-	"cqrs/examples/bank"
+	"eventhus"
+	"eventhus/commandbus"
+	"eventhus/eventbus/nats"
+	"eventhus/eventstore/mongo"
+	"eventhus/examples/bank"
 	"log"
 )
 
-func config() (cqrs.CommandBus, error) {
+func config() (eventhus.CommandBus, error) {
 	//register events
-	reg := cqrs.NewEventRegister()
+	reg := eventhus.NewEventRegister()
 	reg.Set(bank.AccountCreated{})
 	reg.Set(bank.DepositPerformed{})
 	reg.Set(bank.WithdrawalPerformed{})
@@ -32,10 +32,10 @@ func config() (cqrs.CommandBus, error) {
 	}
 
 	//repository
-	repository := cqrs.NewRepository(eventstore, nat)
+	repository := eventhus.NewRepository(eventstore, nat)
 
 	//handlers
-	commandHandler := cqrs.NewCommandHandler()
+	commandHandler := eventhus.NewCommandHandler()
 	accountHandler := bank.NewCommandHandler(repository)
 
 	//add commands to commandhandler

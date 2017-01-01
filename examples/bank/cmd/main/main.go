@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cqrs/examples/bank"
-	"cqrs/utils"
+	"eventhus/examples/bank"
+	"eventhus/utils"
 	"os"
 	"time"
 )

@@ -1,7 +1,7 @@
 package mongo
 
 import (
-	"cqrs"
+	"eventhus"
 	"math/rand"
 	"testing"
 	"time"
@@ -42,22 +42,22 @@ func TestClientSave(t *testing.T) {
 	entropy := rand.New(rand.NewSource(ta.UnixNano()))
 	aid := ulid.MustNew(ulid.Timestamp(ta), entropy)
 
-	events := []cqrs.Event{
-		cqrs.Event{
+	events := []eventhus.Event{
+		eventhus.Event{
 			AggregateID:   aid.String(),
 			AggregateType: "order",
 			Version:       1,
-			Type:          "cqrs.SubEvent2",
+			Type:          "eventhus.SubEvent2",
 			Data: SubEvent2{
 				Name: "muñeca",
 				SKU:  "123",
 			},
 		},
-		cqrs.Event{
+		eventhus.Event{
 			AggregateID:   aid.String(),
 			AggregateType: "order",
 			Version:       1,
-			Type:          "cqrs.SubEvent2",
+			Type:          "eventhus.SubEvent2",
 			Data: SubEvent2{
 				Name: "muñeca",
 				SKU:  "123",

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	n "cqrs/eventbus/nats"
+	n "eventhus/eventbus/nats"
 
 	"github.com/nats-io/go-nats"
 )

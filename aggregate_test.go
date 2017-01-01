@@ -1,4 +1,4 @@
-package cqrs
+package eventhus
 
 import "testing"
 

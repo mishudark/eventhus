@@ -1,4 +1,4 @@
-package cqrs
+package eventhus
 
 //Command contains the methods to retreive basic info about it
 type Command interface {

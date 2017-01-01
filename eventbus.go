@@ -1,4 +1,4 @@
-package cqrs
+package eventhus
 
 //EventBus defines the methods for manage the events publisher and consumer
 type EventBus interface {

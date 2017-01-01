@@ -1,27 +1,27 @@
 package bank
 
-import "cqrs"
+import "eventhus"
 
 //CreateAccount assigned to an owner
 type CreateAccount struct {
-	cqrs.BaseCommand
+	eventhus.BaseCommand
 	Owner string
 }
 
 //PerformDeposit to a given account
 type PerformDeposit struct {
-	cqrs.BaseCommand
+	eventhus.BaseCommand
 	Ammount int
 }
 
 //ChangeOwner of an account
 type ChangeOwner struct {
-	cqrs.BaseCommand
+	eventhus.BaseCommand
 	Owner string
 }
 
 //PerformWithdrawal to a given account
 type PerformWithdrawal struct {
-	cqrs.BaseCommand
+	eventhus.BaseCommand
 	Ammount int
 }

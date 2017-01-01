@@ -1,4 +1,4 @@
-package cqrs
+package eventhus
 
 //BaseAggregate contains the basic info
 //that all aggregates should have

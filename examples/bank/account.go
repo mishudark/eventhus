@@ -1,7 +1,7 @@
 package bank
 
 import (
-	"cqrs"
+	"eventhus"
 	"errors"
 )
 
@@ -10,20 +10,20 @@ var ErrBalanceOut = errors.New("balance out")
 
 //Account of bank
 type Account struct {
-	cqrs.BaseAggregate
+	eventhus.BaseAggregate
 	Owner   string
 	Balance int
 }
 
 //LoadsFromHistory restore the account to last status
-func (a *Account) LoadsFromHistory(events []cqrs.Event) {
+func (a *Account) LoadsFromHistory(events []eventhus.Event) {
 	for _, event := range events {
 		a.BaseAggregate.ApplyChange(a, event, false)
 	}
 }
 
 //ApplyChange to account
-func (a *Account) ApplyChange(event cqrs.Event, commit bool) {
+func (a *Account) ApplyChange(event eventhus.Event, commit bool) {
 	switch e := event.Data.(type) {
 	case *AccountCreated:
 		a.Owner = e.Owner
@@ -36,8 +36,8 @@ func (a *Account) ApplyChange(event cqrs.Event, commit bool) {
 }
 
 //Handle a command
-func (a *Account) Handle(command cqrs.Command) error {
-	event := cqrs.Event{
+func (a *Account) Handle(command eventhus.Command) error {
+	event := eventhus.Event{
 		AggregateID:   a.ID,
 		AggregateType: "Account",
 	}
