@@ -47,7 +47,7 @@ func TestClientSave(t *testing.T) {
 			AggregateID:   aid.String(),
 			AggregateType: "order",
 			Version:       1,
-			Type:          "eventhus.SubEvent2",
+			Type:          "SubEvent2",
 			Data: SubEvent2{
 				Name: "muñeca",
 				SKU:  "123",
@@ -57,7 +57,7 @@ func TestClientSave(t *testing.T) {
 			AggregateID:   aid.String(),
 			AggregateType: "order",
 			Version:       1,
-			Type:          "eventhus.SubEvent2",
+			Type:          "SubEvent2",
 			Data: SubEvent2{
 				Name: "muñeca",
 				SKU:  "123",
