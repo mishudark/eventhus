@@ -1,8 +1,8 @@
 package main
 
 import (
-	"eventhus/examples/bank"
-	"eventhus/utils"
+	"github.com/mishudark/eventhus/examples/bank"
+	"github.com/mishudark/eventhus/utils"
 	"os"
 	"time"
 )

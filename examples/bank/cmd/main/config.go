@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/mishudark/eventhus"
-	"eventhus/commandbus"
-	"eventhus/eventbus/nats"
-	"eventhus/eventstore/mongo"
-	"eventhus/examples/bank"
+	"github.com/mishudark/eventhus/commandbus"
+	"github.com/mishudark/eventhus/eventbus/nats"
+	"github.com/mishudark/eventhus/eventstore/mongo"
+	"github.com/mishudark/eventhus/examples/bank"
 	"log"
 )
 
