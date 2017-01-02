@@ -1,7 +1,7 @@
 package main
 
 import (
-	"eventhus"
+	"github.com/mishudark/eventhus"
 	"eventhus/commandbus"
 	"eventhus/eventbus/nats"
 	"eventhus/eventstore/mongo"

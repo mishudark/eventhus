@@ -1,7 +1,7 @@
 package rabbitmq
 
 import (
-	"eventhus"
+	"github.com/mishudark/eventhus"
 	"encoding/json"
 	"fmt"
 

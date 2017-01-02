@@ -1,7 +1,7 @@
 package mongo
 
 import (
-	"eventhus"
+	"github.com/mishudark/eventhus"
 	"fmt"
 	"time"
 

@@ -1,6 +1,6 @@
 package bank
 
-import "eventhus"
+import "github.com/mishudark/eventhus"
 
 //CreateAccount assigned to an owner
 type CreateAccount struct {

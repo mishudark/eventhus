@@ -1,7 +1,7 @@
 package nats
 
 import (
-	"eventhus"
+	"github.com/mishudark/eventhus"
 	"encoding/json"
 	"strings"
 

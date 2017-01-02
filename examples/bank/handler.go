@@ -1,7 +1,7 @@
 package bank
 
 import (
-	"eventhus"
+	"github.com/mishudark/eventhus"
 	"log"
 )
 
