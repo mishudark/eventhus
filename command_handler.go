@@ -18,23 +18,23 @@ type CommandHandlerRegister interface {
 	//Handlers() []string
 }
 
-//CommandHandler contains a registry of command-handler style
-type CommandHandler struct {
+//CommandRegister contains a registry of command-handler style
+type CommandRegister struct {
 	sync.RWMutex
 	registry map[string]CommandHandle
 	//repository *Repository
 }
 
-//NewCommandHandler creates a new CommandHandler
-func NewCommandHandler() *CommandHandler {
-	return &CommandHandler{
+//NewCommandRegister creates a new CommandHandler
+func NewCommandRegister() *CommandRegister {
+	return &CommandRegister{
 		registry: make(map[string]CommandHandle),
 		//repository: repository,
 	}
 }
 
 //Add a new command with its handler
-func (c *CommandHandler) Add(command interface{}, handler CommandHandle) {
+func (c *CommandRegister) Add(command interface{}, handler CommandHandle) {
 	c.Lock()
 	defer c.Unlock()
 
@@ -44,7 +44,7 @@ func (c *CommandHandler) Add(command interface{}, handler CommandHandle) {
 }
 
 //Get the handler for a command
-func (c *CommandHandler) Get(command interface{}) (CommandHandle, error) {
+func (c *CommandRegister) Get(command interface{}) (CommandHandle, error) {
 	rawType := reflect.TypeOf(command)
 	name := rawType.String()
 
