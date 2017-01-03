@@ -29,9 +29,8 @@ func main() {
 
 			commandBus.HandleCommand(account)
 
-			time.Sleep(time.Millisecond * 100)
-
 			//2) Perform a deposit
+			time.Sleep(time.Millisecond * 100)
 			deposit := bank.PerformDeposit{
 				Ammount: 300,
 			}
