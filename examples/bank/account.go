@@ -2,6 +2,7 @@ package bank
 
 import (
 	"errors"
+
 	"github.com/mishudark/eventhus"
 )
 
@@ -28,8 +29,8 @@ func (a *Account) ApplyChange(event eventhus.Event) {
 	}
 }
 
-//Handle a command
-func (a *Account) Handle(command eventhus.Command) error {
+//HandleCommand create events and validate based on such command
+func (a *Account) HandleCommand(command eventhus.Command) error {
 	event := eventhus.Event{
 		AggregateID:   a.ID,
 		AggregateType: "Account",

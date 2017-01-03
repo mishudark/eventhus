@@ -1,12 +1,14 @@
 package main
 
 import (
+	"log"
+
 	"github.com/mishudark/eventhus"
 	"github.com/mishudark/eventhus/commandbus"
+	"github.com/mishudark/eventhus/commandhandler/basic"
 	"github.com/mishudark/eventhus/eventbus/nats"
 	"github.com/mishudark/eventhus/eventstore/mongo"
 	"github.com/mishudark/eventhus/examples/bank"
-	"log"
 )
 
 func config() (eventhus.CommandBus, error) {
@@ -35,15 +37,15 @@ func config() (eventhus.CommandBus, error) {
 	repository := eventhus.NewRepository(eventstore, nat)
 
 	//handlers
-	commandHandler := eventhus.NewCommandHandler()
-	accountHandler := bank.NewCommandHandler(repository)
+	commandRegister := eventhus.NewCommandHandler()
+	commandHandler := basic.NewHandler(repository, &bank.Account{}, "bank", "account")
 
 	//add commands to commandhandler
-	commandHandler.Add(bank.CreateAccount{}, accountHandler)
-	commandHandler.Add(bank.PerformDeposit{}, accountHandler)
-	commandHandler.Add(bank.PerformWithdrawal{}, accountHandler)
+	commandRegister.Add(bank.CreateAccount{}, commandHandler)
+	commandRegister.Add(bank.PerformDeposit{}, commandHandler)
+	commandRegister.Add(bank.PerformWithdrawal{}, commandHandler)
 
 	//commandbus
-	commandBus := async.NewBus(commandHandler, 30)
+	commandBus := async.NewBus(commandRegister, 30)
 	return commandBus, nil
 }

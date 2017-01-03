@@ -14,9 +14,11 @@ type AggregateHandler interface {
 	//LoadsFromHistory(events []Event)
 	ApplyChange(event Event)
 	ApplyChangeHelper(aggregate AggregateHandler, event Event, commit bool)
+	HandleCommand(Command) error
 	Uncommited() []Event
 	ClearUncommited()
 	IncrementVersion()
+	GetID() string
 }
 
 //Uncommited return the events to be saved
@@ -46,4 +48,9 @@ func (b *BaseAggregate) ApplyChangeHelper(aggregate AggregateHandler, event Even
 		_, event.Type = GetTypeName(event.Data)
 		b.Changes = append(b.Changes, event)
 	}
+}
+
+//GetID of the current aggregate
+func (b *BaseAggregate) GetID() string {
+	return b.ID
 }

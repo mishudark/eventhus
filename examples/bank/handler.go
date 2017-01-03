@@ -1,49 +1,55 @@
 package bank
 
 import (
+	"errors"
+	"reflect"
+
 	"github.com/mishudark/eventhus"
-	"log"
 )
 
+var ErrInvalidID = errors.New("Invalid ID, initial event missign")
+
 type CommandHandler struct {
-	repository *eventhus.Repository
+	repository     *eventhus.Repository
+	aggregate      reflect.Type
+	bucket, subset string
 }
 
-func NewCommandHandler(repository *eventhus.Repository) *CommandHandler {
+func NewCommandHandler(repository *eventhus.Repository, aggregate eventhus.AggregateHandler, bucket, subset string) *CommandHandler {
 	return &CommandHandler{
 		repository: repository,
+		aggregate:  reflect.TypeOf(aggregate),
+		bucket:     bucket,
+		subset:     subset,
 	}
 }
 
 func (c *CommandHandler) Handle(command eventhus.Command) error {
 	var err error
-	var version int
-	var account Account
 
-	switch command.(type) {
-	case CreateAccount:
-		version = 0
+	version := command.GetVersion()
+	aggregate := reflect.New(c.aggregate).Interface().(eventhus.AggregateHandler)
 
-	default:
-		if err = c.repository.Load(&account, command.GetAggregateID()); err != nil {
-			log.Println(err)
+	if version != 0 {
+		if err = c.repository.Load(aggregate, command.GetAggregateID()); err != nil {
 			return err
 		}
-
-		version = command.GetVersion()
 	}
 
-	if err = account.Handle(command); err != nil {
+	if err = aggregate.HandleCommand(command); err != nil {
 		return err
 	}
 
-	if err = c.repository.Save(&account, version); err != nil {
-		log.Println(err)
+	//if not contain a valid ID,  the initial event (some like createAggreagate event) is missing
+	if aggregate.GetID() == "" {
+		return ErrInvalidID
+	}
+
+	if err = c.repository.Save(aggregate, version); err != nil {
 		return err
 	}
 
-	if err = c.repository.PublishEvents(&account, "bank", "account"); err != nil {
-		log.Println(err)
+	if err = c.repository.PublishEvents(aggregate, c.bucket, c.subset); err != nil {
 		return err
 	}
 
