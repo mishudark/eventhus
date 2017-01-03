@@ -38,7 +38,7 @@ func config() (eventhus.CommandBus, error) {
 
 	//handlers
 	commandRegister := eventhus.NewCommandRegister()
-	commandHandler := basic.NewHandler(repository, &bank.Account{}, "bank", "account")
+	commandHandler := basic.NewCommandHandler(repository, &bank.Account{}, "bank", "account")
 
 	//add commands to commandhandler
 	commandRegister.Add(bank.CreateAccount{}, commandHandler)
