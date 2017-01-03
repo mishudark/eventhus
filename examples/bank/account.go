@@ -38,11 +38,9 @@ func (a *Account) Handle(command eventhus.Command) error {
 	switch c := command.(type) {
 	case CreateAccount:
 		event.AggregateID = c.AggregateID
-		event.Type = "AccountCreated"
 		event.Data = &AccountCreated{c.Owner}
 
 	case PerformDeposit:
-		event.Type = "DepositPerformed"
 		event.Data = &DepositPerformed{
 			c.Ammount,
 		}
@@ -52,7 +50,6 @@ func (a *Account) Handle(command eventhus.Command) error {
 			return ErrBalanceOut
 		}
 
-		event.Type = "WithdrawalPerformed"
 		event.Data = &WithdrawalPerformed{
 			c.Ammount,
 		}

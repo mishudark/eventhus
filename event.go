@@ -44,16 +44,11 @@ func NewEventRegister() EventTypeRegister {
 
 //Set a new type
 func (e *EventType) Set(source interface{}) {
+	rawType, name := GetTypeName(source)
+
 	e.Lock()
-	defer e.Unlock()
-
-	rawType := reflect.TypeOf(source)
-	name := rawType.String()
-	//we need to extract only the name without the package
-	//name currently follows the format `package.StructName`
-	parts := strings.Split(name, ".")
-	registry[parts[1]] = rawType
-
+	registry[name] = rawType
+	e.Unlock()
 }
 
 //Get a type based on its name
@@ -92,4 +87,14 @@ func (e *EventType) Events() []string {
 	}
 
 	return values
+}
+
+//GetTypeName of given struct
+func GetTypeName(source interface{}) (reflect.Type, string) {
+	rawType := reflect.TypeOf(source)
+	name := rawType.String()
+	//we need to extract only the name without the package
+	//name currently follows the format `package.StructName`
+	parts := strings.Split(name, ".")
+	return rawType, parts[1]
 }

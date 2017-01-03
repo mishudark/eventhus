@@ -43,6 +43,7 @@ func (b *BaseAggregate) ApplyChangeHelper(aggregate AggregateHandler, event Even
 	aggregate.ApplyChange(event)
 	if commit {
 		event.Version = b.Version
+		_, event.Type = GetTypeName(event.Data)
 		b.Changes = append(b.Changes, event)
 	}
 }
