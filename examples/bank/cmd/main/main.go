@@ -22,6 +22,7 @@ func main() {
 				return
 			}
 
+			//1) Create an account
 			var account bank.CreateAccount
 			account.AggregateID = uuid
 			account.Owner = "mishudark"
@@ -29,6 +30,8 @@ func main() {
 			commandBus.HandleCommand(account)
 
 			time.Sleep(time.Millisecond * 100)
+
+			//2) Perform a deposit
 			deposit := bank.PerformDeposit{
 				Ammount: 300,
 			}
@@ -38,9 +41,10 @@ func main() {
 
 			commandBus.HandleCommand(deposit)
 
+			//3) Perform a withdrawl
 			time.Sleep(time.Millisecond * 100)
 			withdrawl := bank.PerformWithdrawal{
-				Ammount: 300,
+				Ammount: 249,
 			}
 
 			withdrawl.AggregateID = uuid

@@ -1,8 +1,8 @@
 package bank
 
 import (
-	"github.com/mishudark/eventhus"
 	"errors"
+	"github.com/mishudark/eventhus"
 )
 
 //ErrBalanceOut when you don't have balance to perform the operation
@@ -15,15 +15,15 @@ type Account struct {
 	Balance int
 }
 
-//LoadsFromHistory restore the account to last status
-func (a *Account) LoadsFromHistory(events []eventhus.Event) {
-	for _, event := range events {
-		a.BaseAggregate.ApplyChange(a, event, false)
-	}
-}
+//*LoadsFromHistory restore the account to last status
+//func (a *Account) LoadsFromHistory(events []eventhus.Event) {
+//	for _, event := range events {
+//		a.BaseAggregate.ApplyChange(a, event, false)
+//	}
+//}
 
 //ApplyChange to account
-func (a *Account) ApplyChange(event eventhus.Event, commit bool) {
+func (a *Account) ApplyChange(event eventhus.Event) {
 	switch e := event.Data.(type) {
 	case *AccountCreated:
 		a.Owner = e.Owner
@@ -65,6 +65,6 @@ func (a *Account) Handle(command eventhus.Command) error {
 		}
 	}
 
-	a.BaseAggregate.ApplyChange(a, event, true)
+	a.BaseAggregate.ApplyChangeHelper(a, event, true)
 	return nil
 }

@@ -11,8 +11,9 @@ type BaseAggregate struct {
 
 //AggregateHandler defines the methods to process commands
 type AggregateHandler interface {
-	LoadsFromHistory(events []Event)
-	ApplyChange(event Event, commit bool)
+	//LoadsFromHistory(events []Event)
+	ApplyChange(event Event)
+	ApplyChangeHelper(aggregate AggregateHandler, event Event, commit bool)
 	Uncommited() []Event
 	ClearUncommited()
 	IncrementVersion()
@@ -33,13 +34,13 @@ func (b *BaseAggregate) IncrementVersion() {
 	b.Version++
 }
 
-//ApplyChange increments the version of an aggregate and apply the change itself
-func (b *BaseAggregate) ApplyChange(aggregate AggregateHandler, event Event, commit bool) {
+//ApplyChangeHelper increments the version of an aggregate and apply the change itself
+func (b *BaseAggregate) ApplyChangeHelper(aggregate AggregateHandler, event Event, commit bool) {
 	//increments the version in event and aggregate
 	b.IncrementVersion()
 
 	//apply the event itself
-	aggregate.ApplyChange(event, commit)
+	aggregate.ApplyChange(event)
 	if commit {
 		event.Version = b.Version
 		b.Changes = append(b.Changes, event)

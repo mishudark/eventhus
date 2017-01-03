@@ -23,7 +23,9 @@ func (r *Repository) Load(aggregate AggregateHandler, ID string) error {
 		return err
 	}
 
-	aggregate.LoadsFromHistory(events)
+	for _, event := range events {
+		aggregate.ApplyChangeHelper(aggregate, event, false)
+	}
 	return nil
 }
 
