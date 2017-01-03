@@ -15,13 +15,6 @@ type Account struct {
 	Balance int
 }
 
-//*LoadsFromHistory restore the account to last status
-//func (a *Account) LoadsFromHistory(events []eventhus.Event) {
-//	for _, event := range events {
-//		a.BaseAggregate.ApplyChange(a, event, false)
-//	}
-//}
-
 //ApplyChange to account
 func (a *Account) ApplyChange(event eventhus.Event) {
 	switch e := event.Data.(type) {
