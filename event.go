@@ -97,6 +97,7 @@ func GetTypeName(source interface{}) (reflect.Type, string) {
 	if rawType.Kind() == reflect.Ptr {
 		rawType = rawType.Elem()
 	}
+
 	name := rawType.String()
 	//we need to extract only the name without the package
 	//name currently follows the format `package.StructName`
