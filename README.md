@@ -42,6 +42,11 @@ type AccountCreated struct {
 
 We create the `AccountCreated` event, it's a pure go struct, and it's the past equivalent to the previous command `CreateAccount`
 
+##Aggregate
+The aggregate is a logical boundary for things that can change in a business transaction of a given context. the aggregate is neve save in it's current state, instead is stored as a series of events that, after being executed compose the aggregate in it's last state.
+
+Inside eventhus it process the commands and produce events. The whole magic to save events, publish it and recreate an aggregate from event store is made by eventhus
+
 # Event Store
 Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be added
 
