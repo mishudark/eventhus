@@ -117,7 +117,7 @@ Note: The aggregate is never save in it's current state, instead is stored as a 
 Save events, publish it and recreate an aggregate from `event store` is made by **Eventhus** out of the box
 
 # Config 
-`Eventhus` needs to be configured to manage events, commands and to kwnow where store and publish events, please refer to [config example](https://github.com/mishudark/eventhus/blob/master/examples/bank/cmd/main/config.go) for more info  
+`Eventhus` needs to be configured to manage events, commands and to knows where to store and publish events, please refer to [config example](https://github.com/mishudark/eventhus/blob/master/examples/bank/cmd/main/config.go) for more info  
 
 # Event Store
 Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be added
