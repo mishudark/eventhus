@@ -8,7 +8,26 @@ The mainstream approach people use for interacting with an information system is
 **Event Sourcing** ensure that every change to the state of an application is captured in an event object, and that these event objects are themselves stored in the sequence they were applied for the same lifetime as the application state itself.
 
 # Usage
-See the examples folder, it contains a full example of bank account management
+There are 3 basic units of work `event`, `command` and `aggregate` 
+
+## Command
+A command describe an **action** that should be performed, it's always named in the imperative tense,  `PerformDeposit` and `CreateAccount` are examples of how to name a command
+
+Let’s start with some code:
+
+```go
+
+import "github.com/mishudark/eventhus"
+
+//CreateAccount assigned to an owner
+type CreateAccount struct {
+	eventhus.BaseCommand
+	Owner string
+}
+```
+
+At the beginning we create the `CreateAccount` command,  it contains an anonymous struct field of type `eventhus.BaseCommand`. This means `CreateAccount` automatically acquires all the methods of `eventhus.BaseCommand`.
+
 
 # Event Store
 Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be added
