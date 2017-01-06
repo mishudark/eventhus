@@ -88,11 +88,13 @@ func (a *Account) HandleCommand(command eventhus.Command) error {
 }
 
 ```
-First we create an `event` with the basic info `AggregateID` as an identifier and `AggregateType` with the same name as our `aggregate`. Next we use a switch to determine the type of the `command` and produce and `event` as a consecuence.
+First, we create an `event` with the basic info `AggregateID` as an identifier and `AggregateType` with the same name as our `aggregate`. Next, we use a switch to determine the type of the `command` and produce and `event` as a consecuence.
 
-Last the event should need be applied to our aggregate, we use the helper `BaseAggregate.ApplyChangeHelper` with the params `aggregate`, `event` and a last argument set to `true` that means, it should be stored and published via event source and `event publisher` 
+Finally, the event should be applied to our aggregate, we use the helper `BaseAggregate.ApplyChangeHelper` with the params `aggregate`, `event` and the last argument set to `true` that means, it should be stored and published via `event store` and `event publisher` 
   
 Note: `eventhus.BaseAggregate` has some helper methods to make our live easier, we use `HandleCommand` to process a `command` and produce the respective `event`
+
+The last step in the aggregate journey is apply the `events` to our `aggregate`
 
 ```go
 //ApplyChange to account
@@ -107,12 +109,14 @@ func (a *Account) ApplyChange(event eventhus.Event) {
 }
 ```
 
+Also we use a switch-case format to determine the type of the `event` (note that events are pointers), and apply the respective changes
 
 
-
-The aggregate is never save in it's current state, instead is stored as a series of `events` that can recreate the aggregate in it's last state.
+Note: The aggregate is never save in it's current state, instead is stored as a series of `events` that can recreate the aggregate in it's last state.
 
 The whole magic to save events, publish it and recreate an aggregate from `event store` is made by eventhus out of the box
+
+# Config 
 
 
 # Event Store
