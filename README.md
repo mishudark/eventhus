@@ -11,7 +11,7 @@ The mainstream approach people use for interacting with an information system is
 There are 3 basic units of work `event`, `command` and `aggregate` 
 
 ## Command
-A command describe an **action** that should be performed, it's always named in the imperative tense,  `PerformDeposit` and `CreateAccount` are examples of how to name a command
+A command describe an **action** that should be performed, it's always named in the imperative tense such as  `PerformDeposit` `CreateAccount` 
 
 Let’s start with some code:
 
@@ -26,8 +26,24 @@ type CreateAccount struct {
 }
 ```
 
-At the beginning we create the `CreateAccount` command,  it contains an anonymous struct field of type `eventhus.BaseCommand`. This means `CreateAccount` automatically acquires all the methods of `eventhus.BaseCommand`. Also you can define custom fields in this case `Owner` contains the info about the owner of an account
+At the beginning we create the `CreateAccount` command,  it contains an anonymous struct field of type `eventhus.BaseCommand`. This means `CreateAccount` automatically acquires all the methods of `eventhus.BaseCommand`.
 
+Also you can define custom fields, in this case `Owner` contains the info about the owner of an account.
+
+##Event
+A event is the notification that some happend in the past, you can view an event as the representation of reaction of a command after being executed. All events should be represented as verbs in the past tense such as `CustomerRelocated`, `CargoShipped` or `InventoryLossageRecorded`
+
+```go
+
+import "github.com/mishudark/eventhus"
+
+//AccountCreated event
+type AccountCreated struct {
+	Owner string
+}
+```
+
+We create the `AccountCreated` event, it is a pure go struct, and is the past equivalent to the previous command `CreateAccount`
 
 # Event Store
 Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be added
