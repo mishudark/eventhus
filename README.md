@@ -34,9 +34,6 @@ Also you can define custom fields, in this case `Owner` contains the info about 
 An event is the notification that some happend in the past, you can view an event as the representation of reaction of **a command after being executed**. All events should be represented as verbs in the past tense such as `CustomerRelocated`, `CargoShipped` or `InventoryLossageRecorded`
 
 ```go
-
-import "github.com/mishudark/eventhus"
-
 //AccountCreated event
 type AccountCreated struct {
 	Owner string
