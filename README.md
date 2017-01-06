@@ -26,7 +26,7 @@ type CreateAccount struct {
 }
 ```
 
-At the beginning we create the `CreateAccount` command,  it contains an anonymous struct field of type `eventhus.BaseCommand`. This means `CreateAccount` automatically acquires all the methods of `eventhus.BaseCommand`.
+At the beginning we create the `CreateAccount` command,  it contains an anonymous struct field of type `eventhus.BaseCommand`. This means `CreateAccount` automatically acquires all the methods of `eventhus.BaseCommand`. Also you can define custom fields in this case `Owner` contains the info about the owner of an account
 
 
 # Event Store
