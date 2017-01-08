@@ -7,7 +7,10 @@ import (
 	"sync"
 )
 
-var registry = make(map[string]reflect.Type)
+var (
+	mu       sync.RWMutex
+	registry = make(map[string]reflect.Type)
+)
 
 //Event stores the data for every event
 type Event struct {
@@ -46,17 +49,17 @@ func NewEventRegister() EventTypeRegister {
 func (e *EventType) Set(source interface{}) {
 	rawType, name := GetTypeName(source)
 
-	e.Lock()
+	mu.Lock()
 	registry[name] = rawType
-	e.Unlock()
+	mu.Unlock()
 }
 
 //Get a type based on its name
 func (e *EventType) Get(name string) (interface{}, error) {
-	e.RLock()
-	defer e.RUnlock()
-
+	mu.RLock()
 	rawType, ok := registry[name]
+	mu.RUnlock()
+
 	if !ok {
 		return nil, fmt.Errorf("can't find %s in registry", name)
 	}
@@ -66,9 +69,9 @@ func (e *EventType) Get(name string) (interface{}, error) {
 
 //Count the quantity of events registered
 func (e *EventType) Count() int {
-	e.RLock()
+	mu.RLock()
 	count := len(registry)
-	e.RUnlock()
+	mu.RUnlock()
 
 	return count
 }
@@ -78,13 +81,13 @@ func (e *EventType) Events() []string {
 	var i int
 	values := make([]string, len(registry))
 
-	e.RLock()
-	defer e.RUnlock()
-
+	mu.RLock()
 	for key := range registry {
 		values[i] = key
 		i++
 	}
+
+	mu.RUnlock()
 
 	return values
 }
