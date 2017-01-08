@@ -194,8 +194,7 @@ func config() eventhus.CommandBus {
 ```
 
 # Examples
-[bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example of bank account with owner, deposits and withdrawls
-
+[bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example  with `owner`, `deposits` and `withdrawls`
 
 ## Prior Art
 
