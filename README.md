@@ -92,7 +92,7 @@ First, we create an `event` with the basic info `AggregateID` as an identifier a
 
 Finally, the event should be applied to our aggregate, we use the helper `BaseAggregate.ApplyChangeHelper` with the params `aggregate`, `event` and the last argument set to `true` that means, it should be stored and published via `event store` and `event publisher` 
   
-Note: `eventhus.BaseAggregate` has some helper methods to make our live easier, we use `HandleCommand` to process a `command` and produce the respective `event`
+Note: `eventhus.BaseAggregate` has some helper methods to make our life easier, we use `HandleCommand` to process a `command` and produce the respective `event`
 
 The last step in the aggregate journey is apply the `events` to our `aggregate`
 
