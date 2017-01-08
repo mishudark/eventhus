@@ -210,6 +210,7 @@ You should liste your `eventbus`, the format of the event allways is the same, o
 		"Owner": "mishudark"
 	}
 }
+```
 
 # Examples
 [bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example  with `owner`, `deposits` and `withdrawls`
