@@ -119,11 +119,27 @@ Save events, publish it and recreate an aggregate from `event store` is made by 
 # Config 
 `Eventhus` needs to be configured to manage events, commands and to knows where to store and publish events, please refer to [config example](https://github.com/mishudark/eventhus/blob/master/examples/bank/cmd/main/config.go) for more info  
 
-# Event Store
-Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be added
+## Event Store
+Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be add
 
-# Event Publisher
+```go
+import "github.com/mishudark/eventhus/eventstore/mongo"
+...
+
+eventstore, err := mongo.NewClient("localhost", 27017, "bank")
+```
+
+
+## Event Publisher
 `RabbitMQ` and `Nats.io` are supported
+
+```go
+import 	"github.com/mishudark/eventhus/eventbus/rabbitmq"
+...
+
+rabbit, err := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
+```
+
 
 ## Prior Art
 
