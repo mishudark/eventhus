@@ -195,6 +195,20 @@ func config() eventhus.CommandBus {
 
 Then now you are ready to process commands
 
+```go
+uuid, _ := utils.UUID()
+
+//1) Create an account
+var account bank.CreateAccount
+account.AggregateID = uuid
+account.Owner = "mishudark"
+
+commandBus.HandleCommand(account)
+
+```
+
+First we generate a new `UUID` this is because is a new account and we need a unique identifier, after we created the basic structure of our `CreateAccount` command, then we only need to send it using the `commandbus` created in our config
+ 
 ## Event consumer
 
 You should liste your `eventbus`, the format of the event allways is the same, only `data` key change in function of your event struct 
