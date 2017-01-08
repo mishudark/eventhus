@@ -10,6 +10,8 @@ The mainstream approach people use for interacting with an information system is
 # Usage
 There are 3 basic units of work `event`, `command` and `aggregate` 
 
+Don't want to read the doc?  please refer to [bank account example (https://github.com/mishudark/eventhus/blob/master/examples/bank) to see the code  
+
 ## Command
 A command describe an **action** that should be performed, it's always named in the imperative tense such as  `PerformDeposit` `CreateAccount` 
 
@@ -117,7 +119,7 @@ Note: The aggregate is never save in it's current state, instead is stored as a 
 Save events, publish it and recreate an aggregate from `event store` is made by **Eventhus** out of the box
 
 # Config 
-`Eventhus` needs to be configured to manage events, commands and to knows where to store and publish events, please refer to [config example](https://github.com/mishudark/eventhus/blob/master/examples/bank/cmd/main/config.go) for more info  
+`Eventhus` needs to be configured to manage events, commands and to knows where to store and publish events
 
 ## Event Store
 Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be add
