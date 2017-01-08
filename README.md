@@ -164,7 +164,8 @@ func config() eventhus.CommandBus {
 	reg.Set(bank.AccountCreated{})
 	reg.Set(bank.DepositPerformed{})
 	reg.Set(bank.WithdrawalPerformed{})
-
+	
+	//eventbus
 	rabbit, _ := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
 	
 	//event store
