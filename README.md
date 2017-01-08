@@ -213,7 +213,7 @@ First we generate a new `UUID` this is because is a new account and we need a un
  
 ## Event consumer
 
-You should liste your `eventbus`, the format of the event allways is the same, only `data` key change in function of your event struct 
+You should listen your `eventbus`, the format of the event allways is the same, only `data` key change in function of your event struct 
 
 ```json
 {
