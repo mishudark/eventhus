@@ -10,8 +10,6 @@ The mainstream approach people use for interacting with an information system is
 # Usage
 There are 3 basic units of work `event`, `command` and `aggregate` 
 
-Don't want to read the doc?  please refer to [bank account example] (https://github.com/mishudark/eventhus/blob/master/examples/bank) to see the code  
-
 ## Command
 A command describe an **action** that should be performed, it's always named in the imperative tense such as  `PerformDeposit` `CreateAccount` 
 
@@ -194,6 +192,9 @@ func config() eventhus.CommandBus {
 }
 
 ```
+
+# Examples
+[bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example of bank account with owner, deposits and withdrawls
 
 
 ## Prior Art
