@@ -143,7 +143,7 @@ rabbit, err := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
 we create an eventbus with `rabbitmq.NewClient`, it accepts `username`, `password`, `host` and `port` as arguments
 
 ## Put all the wires together 
-Now that we have all the pieces, we can register our `events`, `commands` and `aggregates`, see all the code in the next example
+Now that we have all the pieces, we can register our `events`, `commands` and `aggregates`, see all the code in the next example, errors are ommited by readability
 
 ```go
 import (
@@ -156,6 +156,7 @@ import (
 )
 
 ...
+
 func config() eventhus.CommandBus {
 
 	//register events
