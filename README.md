@@ -128,6 +128,7 @@ import "github.com/mishudark/eventhus/eventstore/mongo"
 
 eventstore, err := mongo.NewClient("localhost", 27017, "bank")
 ```
+we create an eventstore with `mongo.NewClient`, it accepts `host`, `port` and `table` as arguments
 
 
 ## Event Publisher
@@ -138,6 +139,56 @@ import 	"github.com/mishudark/eventhus/eventbus/rabbitmq"
 ...
 
 rabbit, err := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
+```
+we create an eventbus with `rabbitmq.NewClient`, it accepts `username`, `password`, `host` and `port` as arguments
+
+## Put all the wires together 
+Now that we have all the pieces, we can register our `events`, `commands` and `aggregates`, see all the code in the next example
+
+```go
+import (
+	"github.com/mishudark/eventhus"
+	"github.com/mishudark/eventhus/commandbus"
+	"github.com/mishudark/eventhus/commandhandler/basic"
+	"github.com/mishudark/eventhus/eventbus/rabbitmq"
+	"github.com/mishudark/eventhus/eventstore/mongo"
+	"github.com/mishudark/eventhus/examples/bank"
+)
+
+...
+func config() eventhus.CommandBus {
+
+	//register events
+	reg := eventhus.NewEventRegister()
+	reg.Set(bank.AccountCreated{})
+	reg.Set(bank.DepositPerformed{})
+	reg.Set(bank.WithdrawalPerformed{})
+
+	rabbit, _ := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
+	
+	//event store
+	eventstore, _ := mongo.NewClient("localhost", 27017, "bank")
+	
+
+	//repository
+	repository := eventhus.NewRepository(eventstore, rabbit)
+
+	//handlers
+	commandRegister := eventhus.NewCommandRegister()
+	commandHandler := basic.NewCommandHandler(repository, &bank.Account{}, "bank", "account")
+
+	//add commands to commandhandler
+	commandRegister.Add(bank.CreateAccount{}, commandHandler)
+	commandRegister.Add(bank.PerformDeposit{}, commandHandler)
+	commandRegister.Add(bank.PerformWithdrawal{}, commandHandler)
+
+	//commandbus
+	commandBus := async.NewBus(commandRegister, 30)
+	
+	return commandBus
+	
+}
+
 ```
 
 
