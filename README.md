@@ -185,6 +185,8 @@ func config() eventhus.CommandBus {
 	commandRegister.Add(bank.PerformWithdrawal{}, commandHandler)
 
 	//commandbus
+	//the second argument is the quantity of workers(concurrent jobs) supported
+	//the rest of the jobs are queued waiting for a free worker 
 	commandBus := async.NewBus(commandRegister, 30)
 	
 	return commandBus
