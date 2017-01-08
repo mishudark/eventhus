@@ -193,6 +193,24 @@ func config() eventhus.CommandBus {
 
 ```
 
+Then now you are ready to process commands
+
+## Event consumer
+
+You should liste your `eventbus`, the format of the event allways is the same, only `data` key change in function of your event struct 
+
+```json
+{
+	"ID": "0000XSNJG0SB2WDBTATBYEC51P",
+	"AggregateID": "0000XSNJG0N0ZVS3YXM4D7ZZ9Z",
+	"AggregateType": "Account",
+	"Version": 1,
+	"Type": "AccountCreated",
+	"Data": {
+		"Owner": "mishudark"
+	}
+}
+
 # Examples
 [bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example  with `owner`, `deposits` and `withdrawls`
 
