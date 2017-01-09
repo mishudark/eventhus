@@ -2,20 +2,20 @@ package bank
 
 //AccountCreated event
 type AccountCreated struct {
-	Owner string
+	Owner string `json:"owner"`
 }
 
 //DepositPerformed event
 type DepositPerformed struct {
-	Ammount int
+	Ammount int `json:"ammount"`
 }
 
 //OwnerChanged event
 type OwnerChanged struct {
-	Owner string
+	Owner string `json:"owner"`
 }
 
 //WithdrawalPerformed event
 type WithdrawalPerformed struct {
-	Ammount int
+	Ammount int `json:"ammount"`
 }
