@@ -220,13 +220,13 @@ You should listen your `eventbus`, the format of the event allways is the same, 
 
 ```json
 {
-	"ID": "0000XSNJG0SB2WDBTATBYEC51P",
-	"AggregateID": "0000XSNJG0N0ZVS3YXM4D7ZZ9Z",
-	"AggregateType": "Account",
-	"Version": 1,
-	"Type": "AccountCreated",
-	"Data": {
-		"Owner": "mishudark"
+	"id": "0000XSNJG0SB2WDBTATBYEC51P",
+	"aggregate_id": "0000XSNJG0N0ZVS3YXM4D7ZZ9Z",
+	"aggregate_type": "Account",
+	"version": 1,
+	"type": "AccountCreated",
+	"data": {
+		"owner": "mishudark"
 	}
 }
 ```
