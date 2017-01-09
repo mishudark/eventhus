@@ -7,6 +7,9 @@ The mainstream approach people use for interacting with an information system is
 
 **Event Sourcing** ensure that every change to the state of an application is captured in an event object, and that these event objects are themselves stored in the sequence they were applied for the same lifetime as the application state itself.
 
+# Examples
+[bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example  with `deposits` and `withdrawls`
+
 # Usage
 There are 3 basic units of work `event`, `command` and `aggregate` 
 
@@ -185,6 +188,8 @@ func config() eventhus.CommandBus {
 	commandRegister.Add(bank.PerformWithdrawal{}, commandHandler)
 
 	//commandbus
+	//the second argument is the quantity of workers(concurrent jobs) supported
+	//the rest of the jobs are queued waiting for a free worker 
 	commandBus := async.NewBus(commandRegister, 30)
 	
 	return commandBus
@@ -193,8 +198,40 @@ func config() eventhus.CommandBus {
 
 ```
 
-# Examples
-[bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example  with `owner`, `deposits` and `withdrawls`
+Then now you are ready to process commands
+
+```go
+uuid, _ := utils.UUID()
+
+//1) Create an account
+var account bank.CreateAccount
+account.AggregateID = uuid
+account.Owner = "mishudark"
+
+commandBus.HandleCommand(account)
+
+```
+
+First we generate a new `UUID` this is because is a new account and we need a unique identifier, after we created the basic structure of our `CreateAccount` command, then we only need to send it using the `commandbus` created in our config
+ 
+## Event consumer
+
+You should listen your `eventbus`, the format of the event allways is the same, only `data` key change in function of your event struct 
+
+```json
+{
+	"id": "0000XSNJG0SB2WDBTATBYEC51P",
+	"aggregate_id": "0000XSNJG0N0ZVS3YXM4D7ZZ9Z",
+	"aggregate_type": "Account",
+	"version": 1,
+	"type": "AccountCreated",
+	"data": {
+		"owner": "mishudark"
+	}
+}
+```
+
+
 
 ## Prior Art
 
