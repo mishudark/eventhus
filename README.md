@@ -7,6 +7,9 @@ The mainstream approach people use for interacting with an information system is
 
 **Event Sourcing** ensure that every change to the state of an application is captured in an event object, and that these event objects are themselves stored in the sequence they were applied for the same lifetime as the application state itself.
 
+# Examples
+[bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example  with `deposits` and `withdrawls`
+
 # Usage
 There are 3 basic units of work `event`, `command` and `aggregate` 
 
@@ -228,8 +231,7 @@ You should listen your `eventbus`, the format of the event allways is the same, 
 }
 ```
 
-# Examples
-[bank account] (https://github.com/mishudark/eventhus/blob/master/examples/bank) shows a full example  with `owner`, `deposits` and `withdrawls`
+
 
 ## Prior Art
 
