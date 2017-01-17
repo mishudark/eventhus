@@ -25,13 +25,13 @@ import "github.com/mishudark/eventhus"
 //PerformDeposit to an account
 type PerformDeposit struct {
 	eventhus.BaseCommand
-	Ammount int
+	Amount int
 }
 ```
 
 At the beginning we create the `PerformDeposit` command,  it contains an anonymous struct field of type `eventhus.BaseCommand`. This means `PerformDeposit` automatically acquires all the methods of `eventhus.BaseCommand`.
 
-Also you can define custom fields, in this case `Ammount` contains quantity to being depositen in an account.
+Also you can define custom fields, in this case `Amount` contains quantity to being depositen in an account.
 
 ##Event
 An event is the notification that some happend in the past, you can view an event as the representation of reaction of **a command after being executed**. All events should be represented as verbs in the past tense such as `CustomerRelocated`, `CargoShipped` or `InventoryLossageRecorded`
@@ -39,7 +39,7 @@ An event is the notification that some happend in the past, you can view an even
 ```go
 //DepositPerformed event
 type DepositPerformed struct {
-	Ammount int
+	Amount int
 }
 ```
 
@@ -82,7 +82,7 @@ func (a *Account) HandleCommand(command eventhus.Command) error {
 
 	case PerformDeposit:
 		event.Data = &DepositPerformed{
-			c.Ammount,
+			c.Amount,
 		}
 	}
 
@@ -107,7 +107,7 @@ func (a *Account) ApplyChange(event eventhus.Event) {
 		a.Owner = e.Owner
 		a.ID = event.AggregateID
 	case *DepositPerformed:
-		a.Balance += e.Ammount
+		a.Balance += e.Amount
 	}
 }
 ```
