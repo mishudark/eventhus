@@ -11,7 +11,7 @@ type CreateAccount struct {
 //PerformDeposit to a given account
 type PerformDeposit struct {
 	eventhus.BaseCommand
-	Ammount int
+	Amount int
 }
 
 //ChangeOwner of an account
@@ -23,5 +23,5 @@ type ChangeOwner struct {
 //PerformWithdrawal to a given account
 type PerformWithdrawal struct {
 	eventhus.BaseCommand
-	Ammount int
+	Amount int
 }

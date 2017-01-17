@@ -7,7 +7,7 @@ type AccountCreated struct {
 
 //DepositPerformed event
 type DepositPerformed struct {
-	Ammount int `json:"ammount"`
+	Amount int `json:"ammount"`
 }
 
 //OwnerChanged event
@@ -17,5 +17,5 @@ type OwnerChanged struct {
 
 //WithdrawalPerformed event
 type WithdrawalPerformed struct {
-	Ammount int `json:"ammount"`
+	Amount int `json:"ammount"`
 }

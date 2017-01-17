@@ -32,7 +32,7 @@ func main() {
 			//2) Perform a deposit
 			time.Sleep(time.Millisecond * 100)
 			deposit := bank.PerformDeposit{
-				Ammount: 300,
+				Amount: 300,
 			}
 
 			deposit.AggregateID = uuid
@@ -43,7 +43,7 @@ func main() {
 			//3) Perform a withdrawl
 			time.Sleep(time.Millisecond * 100)
 			withdrawl := bank.PerformWithdrawal{
-				Ammount: 249,
+				Amount: 249,
 			}
 
 			withdrawl.AggregateID = uuid

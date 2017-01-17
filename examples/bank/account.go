@@ -23,9 +23,9 @@ func (a *Account) ApplyChange(event eventhus.Event) {
 		a.Owner = e.Owner
 		a.ID = event.AggregateID
 	case *DepositPerformed:
-		a.Balance += e.Ammount
+		a.Balance += e.Amount
 	case *WithdrawalPerformed:
-		a.Balance -= e.Ammount
+		a.Balance -= e.Amount
 	}
 }
 
@@ -43,16 +43,16 @@ func (a *Account) HandleCommand(command eventhus.Command) error {
 
 	case PerformDeposit:
 		event.Data = &DepositPerformed{
-			c.Ammount,
+			c.Amount,
 		}
 
 	case PerformWithdrawal:
-		if a.Balance < c.Ammount {
+		if a.Balance < c.Amount {
 			return ErrBalanceOut
 		}
 
 		event.Data = &WithdrawalPerformed{
-			c.Ammount,
+			c.Amount,
 		}
 	}
 
