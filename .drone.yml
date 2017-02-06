@@ -1,0 +1,11 @@
+workspace:
+  base: /go
+  path: src/github.com/mishudark/eventhus
+
+pipeline:
+  test:
+    image: golang:1.8-alpine
+    commands:
+      - curl https://glide.sh/get | sh
+      - glide install
+      - go test -v
