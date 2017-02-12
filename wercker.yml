@@ -1,0 +1,16 @@
+box: golang:1.8rc3-alpine
+
+services:
+    - mongo
+
+build:
+  steps:
+    - wercker/setup-go-workspace
+      package-dir: github.com/mishudark/eventhus
+
+    - wercker/glide-install
+
+    - script:
+        name: go test
+        code: |
+          go test
