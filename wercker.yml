@@ -1,4 +1,4 @@
-box: golang:1.8rc3-alpine
+box: golang
 
 services:
     - mongo
