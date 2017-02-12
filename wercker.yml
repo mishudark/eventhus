@@ -16,8 +16,7 @@ build:
           go get github.com/alecthomas/gometalinter
           gometalinter --install --update
 
-
-build:
+test:
   steps:
     - script:
         name: go test
