@@ -21,4 +21,4 @@ test:
     - script:
         name: go test
         code: |
-          go test
+          go test -v --cover
