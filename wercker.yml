@@ -5,7 +5,7 @@ services:
 
 build:
   steps:
-    - wercker/setup-go-workspace
+    - wercker/setup-go-workspace:
       package-dir: github.com/mishudark/eventhus
 
     - wercker/glide-install
