@@ -10,11 +10,11 @@ build:
 
     - wercker/glide-install
 
-     - script:
-         name: install gometalinter
-         code: |
-           go get github.com/alecthomas/gometalinter
-           gometalinter --install --update
+    - script:
+        name: install gometalinter
+        code: |
+          go get github.com/alecthomas/gometalinter
+          gometalinter --install --update
 
     - script:
         name: go test
