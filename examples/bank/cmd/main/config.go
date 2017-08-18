@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/mishudark/eventhus"
-	"github.com/mishudark/eventhus/commandbus"
+	"github.com/mishudark/eventhus/commandbus/async"
 	"github.com/mishudark/eventhus/commandhandler/basic"
 	"github.com/mishudark/eventhus/eventbus/nats"
 	"github.com/mishudark/eventhus/eventstore/mongo"
