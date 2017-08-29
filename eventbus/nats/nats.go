@@ -1,19 +1,19 @@
 package nats
 
 import (
-	"github.com/mishudark/eventhus"
 	"encoding/json"
+	"github.com/mishudark/eventhus"
 	"strings"
 
 	nats "github.com/nats-io/go-nats"
 )
 
-//Client nats
+// Client nats
 type Client struct {
 	Options nats.Options
 }
 
-//NewClient returns the basic client to access to nats
+// NewClient returns the basic client to access to nats
 func NewClient(urls string, useTLS bool) (*Client, error) {
 	opts := nats.DefaultOptions
 	opts.Secure = useTLS
@@ -28,7 +28,7 @@ func NewClient(urls string, useTLS bool) (*Client, error) {
 	}, nil
 }
 
-//Publish a event
+// Publish a event
 func (c *Client) Publish(event eventhus.Event, bucket, subset string) error {
 	nc, err := c.Options.Connect()
 	if err != nil {

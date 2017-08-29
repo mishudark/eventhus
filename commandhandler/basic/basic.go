@@ -7,17 +7,17 @@ import (
 	"github.com/mishudark/eventhus"
 )
 
-//ErrInvalidID missing initial event
+// ErrInvalidID missing initial event
 var ErrInvalidID = errors.New("Invalid ID, initial event missign")
 
-//Handler contains the info to manage commands
+// Handler contains the info to manage commands
 type Handler struct {
 	repository     *eventhus.Repository
 	aggregate      reflect.Type
 	bucket, subset string
 }
 
-//NewCommandHandler return a handler
+// NewCommandHandler return a handler
 func NewCommandHandler(repository *eventhus.Repository, aggregate eventhus.AggregateHandler, bucket, subset string) *Handler {
 	return &Handler{
 		repository: repository,
@@ -27,7 +27,7 @@ func NewCommandHandler(repository *eventhus.Repository, aggregate eventhus.Aggre
 	}
 }
 
-//Handle a command
+// Handle a command
 func (h *Handler) Handle(command eventhus.Command) error {
 	var err error
 
@@ -44,7 +44,7 @@ func (h *Handler) Handle(command eventhus.Command) error {
 		return err
 	}
 
-	//if not contain a valid ID,  the initial event (some like createAggreagate event) is missing
+	// if not contain a valid ID,  the initial event (some like createAggreagate event) is missing
 	if aggregate.GetID() == "" {
 		return ErrInvalidID
 	}

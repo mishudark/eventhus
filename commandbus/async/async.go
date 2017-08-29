@@ -17,7 +17,7 @@ type Bus struct {
 	maxWorkers     int
 }
 
-//Start initialize a worker ready to receive jobs
+// Start initialize a worker ready to receive jobs
 func (w *Worker) Start() {
 	go func() {
 		for {
