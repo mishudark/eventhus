@@ -33,7 +33,7 @@ At the beginning we create the `PerformDeposit` command,  it contains an anonymo
 
 Also you can define custom fields, in this case `Amount` contains quantity to being depositen in an account.
 
-##Event
+## Event
 
 An event is the notification that some happend in the past, you can view an event as the representation of reaction of **a command after being executed**. All events should be represented as verbs in the past tense such as `CustomerRelocated`, `CargoShipped` or `InventoryLossageRecorded`
 
@@ -46,7 +46,8 @@ type DepositPerformed struct {
 
 We create the `DepositPerformed` event, it's a pure go struct, and it's the past equivalent to the previous command `PerformDeposit`
 
-##Aggregate
+## Aggregate
+
 
 The aggregate is a logical boundary for things that can change in a business transaction of a given context. In the eventhus context, it simple process the commands and produce events.
 
@@ -217,6 +218,7 @@ commandBus.HandleCommand(account)
 First we generate a new `UUID` this is because is a new account and we need a unique identifier, after we created the basic structure of our `CreateAccount` command, then we only need to send it using the `commandbus` created in our config
 
 ## Event consumer
+
 
 You should listen your `eventbus`, the format of the event allways is the same, only `data` key change in function of your event struct
 
