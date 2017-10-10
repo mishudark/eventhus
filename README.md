@@ -34,6 +34,7 @@ At the beginning we create the `PerformDeposit` command,  it contains an anonymo
 Also you can define custom fields, in this case `Amount` contains quantity to being depositen in an account.
 
 ##Event
+
 An event is the notification that some happend in the past, you can view an event as the representation of reaction of **a command after being executed**. All events should be represented as verbs in the past tense such as `CustomerRelocated`, `CargoShipped` or `InventoryLossageRecorded`
 
 ```go
@@ -46,6 +47,7 @@ type DepositPerformed struct {
 We create the `DepositPerformed` event, it's a pure go struct, and it's the past equivalent to the previous command `PerformDeposit`
 
 ##Aggregate
+
 The aggregate is a logical boundary for things that can change in a business transaction of a given context. In the eventhus context, it simple process the commands and produce events.
 
 Show me the code!
@@ -89,8 +91,8 @@ func (a *Account) HandleCommand(command eventhus.Command) error {
 	a.BaseAggregate.ApplyChangeHelper(a, event, true)
 	return nil
 }
-
 ```
+
 First, we create an `event` with the basic info `AggregateID` as an identifier and `AggregateType` with the same name as our `aggregate`. Next, we use a switch to determine the type of the `command` and produce and `event` as a consecuence.
 
 Finally, the event should be applied to our aggregate, we use the helper `BaseAggregate.ApplyChangeHelper` with the params `aggregate`, `event` and the last argument set to `true` that means, it should be stored and published via `event store` and `event publisher`
@@ -114,15 +116,16 @@ func (a *Account) ApplyChange(event eventhus.Event) {
 
 Also we use a switch-case format to determine the type of the `event` (note that events are pointers), and apply the respective changes
 
-
 Note: The aggregate is never save in it's current state, instead is stored as a series of `events` that can recreate the aggregate in it's last state.
 
 Save events, publish it and recreate an aggregate from `event store` is made by **Eventhus** out of the box
 
 # Config
+
 `Eventhus` needs to be configured to manage events, commands and to knows where to store and publish events
 
 ## Event Store
+
 Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be add
 
 ```go
@@ -135,6 +138,7 @@ we create an eventstore with `mongo.NewClient`, it accepts `host`, `port` and `t
 
 
 ## Event Publisher
+
 `RabbitMQ` and `Nats.io` are supported
 
 ```go
@@ -146,6 +150,7 @@ rabbit, err := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
 we create an eventbus with `rabbitmq.NewClient`, it accepts `username`, `password`, `host` and `port` as arguments
 
 ## Put all the wires together
+
 Now that we have all the pieces, we can register our `events`, `commands` and `aggregates`, see all the code in the next example, errors are ommited by readability
 
 ```go
@@ -157,7 +162,6 @@ import (
 	"github.com/mishudark/eventhus/eventstore/mongo"
 	"github.com/mishudark/eventhus/examples/bank"
 )
-
 ...
 
 func config() eventhus.CommandBus {
@@ -195,7 +199,6 @@ func config() eventhus.CommandBus {
 	return commandBus
 
 }
-
 ```
 
 Then now you are ready to process commands
@@ -209,7 +212,6 @@ account.AggregateID = uuid
 account.Owner = "mishudark"
 
 commandBus.HandleCommand(account)
-
 ```
 
 First we generate a new `UUID` this is because is a new account and we need a unique identifier, after we created the basic structure of our `CreateAccount` command, then we only need to send it using the `commandbus` created in our config
@@ -230,8 +232,6 @@ You should listen your `eventbus`, the format of the event allways is the same, 
 	}
 }
 ```
-
-
 
 ## Prior Art
 
