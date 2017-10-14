@@ -163,13 +163,13 @@ import (
 )
 
 func getConfig() (eventhus.CommandBus, error) {
-	//register events
+	// register events
 	reg := eventhus.NewEventRegister()
 	reg.Set(bank.AccountCreated{})
 	reg.Set(bank.DepositPerformed{})
 	reg.Set(bank.WithdrawalPerformed{})
 
-    // wire all parts together
+    	// wire all parts together
 	return config.NewClient(
 		config.Mongo("localhost", 27017, "bank"),                    // event store
 		config.Nats("nats://ruser:T0pS3cr3t@localhost:4222", false), // event bus
