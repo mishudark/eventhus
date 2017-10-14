@@ -1,18 +1,25 @@
 package main
 
 import (
-	"github.com/mishudark/eventhus/examples/bank"
-	"github.com/mishudark/eventhus/utils"
+	"flag"
 	"os"
 	"time"
+
+	"github.com/golang/glog"
+	"github.com/mishudark/eventhus/examples/bank"
+	"github.com/mishudark/eventhus/utils"
 )
 
 func main() {
-	end := make(chan bool)
-	commandBus, err := config()
+	flag.Parse()
+
+	commandBus, err := getConfig()
 	if err != nil {
+		glog.Infoln(err)
 		os.Exit(1)
 	}
+
+	end := make(chan bool)
 
 	//Create Account
 	for i := 0; i < 3; i++ {
@@ -28,6 +35,7 @@ func main() {
 			account.Owner = "mishudark"
 
 			commandBus.HandleCommand(account)
+			glog.Infof("account %s - account created", uuid)
 
 			//2) Perform a deposit
 			time.Sleep(time.Millisecond * 100)
@@ -39,6 +47,7 @@ func main() {
 			deposit.Version = 1
 
 			commandBus.HandleCommand(deposit)
+			glog.Infof("account %s - deposit performed", uuid)
 
 			//3) Perform a withdrawl
 			time.Sleep(time.Millisecond * 100)
@@ -50,6 +59,7 @@ func main() {
 			withdrawl.Version = 2
 
 			commandBus.HandleCommand(withdrawl)
+			glog.Infof("account %s - withdrawl performed", uuid)
 		}()
 	}
 	<-end

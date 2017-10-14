@@ -130,12 +130,12 @@ Save events, publish it and recreate an aggregate from `event store` is made by 
 Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be add
 
 ```go
-import "github.com/mishudark/eventhus/eventstore/mongo"
+import "github.com/mishudark/eventhus/config"
 ...
 
-eventstore, err := mongo.NewClient("localhost", 27017, "bank")
+config.Mongo("localhost", 27017, "bank") // event store
 ```
-we create an eventstore with `mongo.NewClient`, it accepts `host`, `port` and `table` as arguments
+we create an eventstore with `config.Mongo`, it accepts `host`, `port` and `table` as arguments
 
 
 ## Event Publisher
@@ -143,62 +143,47 @@ we create an eventstore with `mongo.NewClient`, it accepts `host`, `port` and `t
 `RabbitMQ` and `Nats.io` are supported
 
 ```go
-import 	"github.com/mishudark/eventhus/eventbus/rabbitmq"
+import 	"github.com/mishudark/eventhus/config"
 ...
 
-rabbit, err := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
+config.Nats("nats://ruser:T0pS3cr3t@localhost:4222", false) // event bus
 ```
-we create an eventbus with `rabbitmq.NewClient`, it accepts `username`, `password`, `host` and `port` as arguments
+we create an eventbus with `config.Nats`, it accepts `url data config` and `useSSL` as arguments
 
 ## Put all the wires together
 
-Now that we have all the pieces, we can register our `events`, `commands` and `aggregates`, see all the code in the next example, errors are ommited by readability
+Now that we have all the pieces, we can register our `events`, `commands` and `aggregates`, see all the code in the next example
 
 ```go
 import (
 	"github.com/mishudark/eventhus"
-	"github.com/mishudark/eventhus/commandbus/async"
 	"github.com/mishudark/eventhus/commandhandler/basic"
-	"github.com/mishudark/eventhus/eventbus/rabbitmq"
-	"github.com/mishudark/eventhus/eventstore/mongo"
+	"github.com/mishudark/eventhus/config"
 	"github.com/mishudark/eventhus/examples/bank"
 )
-...
 
-func config() eventhus.CommandBus {
-
+func getConfig() (eventhus.CommandBus, error) {
 	//register events
 	reg := eventhus.NewEventRegister()
 	reg.Set(bank.AccountCreated{})
 	reg.Set(bank.DepositPerformed{})
 	reg.Set(bank.WithdrawalPerformed{})
 
-	//eventbus
-	rabbit, _ := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
-
-	//event store
-	eventstore, _ := mongo.NewClient("localhost", 27017, "bank")
-
-
-	//repository
-	repository := eventhus.NewRepository(eventstore, rabbit)
-
-	//handlers
-	commandRegister := eventhus.NewCommandRegister()
-	commandHandler := basic.NewCommandHandler(repository, &bank.Account{}, "bank", "account")
-
-	//add commands to commandhandler
-	commandRegister.Add(bank.CreateAccount{}, commandHandler)
-	commandRegister.Add(bank.PerformDeposit{}, commandHandler)
-	commandRegister.Add(bank.PerformWithdrawal{}, commandHandler)
-
-	//commandbus
-	//the second argument is the quantity of workers(concurrent jobs) supported
-	//the rest of the jobs are queued waiting for a free worker
-	commandBus := async.NewBus(commandRegister, 30)
-
-	return commandBus
-
+    // wire all parts together
+	return config.NewClient(
+		config.Mongo("localhost", 27017, "bank"),                    // event store
+		config.Nats("nats://ruser:T0pS3cr3t@localhost:4222", false), // event bus
+		config.AsyncCommandBus(30),                                  // command bus
+		config.WireCommands(
+			&bank.Account{},          // aggregate
+			basic.NewCommandHandler,  // command handler
+			"bank",                   // event store bucket
+			"account",                // event store subset
+			bank.CreateAccount{},     // command
+			bank.PerformDeposit{},    // command
+			bank.PerformWithdrawal{}, // command
+		),
+	)
 }
 ```
 

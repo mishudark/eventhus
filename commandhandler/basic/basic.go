@@ -18,7 +18,7 @@ type Handler struct {
 }
 
 // NewCommandHandler return a handler
-func NewCommandHandler(repository *eventhus.Repository, aggregate eventhus.AggregateHandler, bucket, subset string) *Handler {
+func NewCommandHandler(repository *eventhus.Repository, aggregate eventhus.AggregateHandler, bucket, subset string) eventhus.CommandHandle {
 	return &Handler{
 		repository: repository,
 		aggregate:  reflect.TypeOf(aggregate).Elem(),

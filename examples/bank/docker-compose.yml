@@ -1,0 +1,10 @@
+mongo:
+  image: mvertes/alpine-mongo
+  ports:
+    - "27017:27017"
+
+nats:
+  image: nats
+  ports:
+    - "4222:4222"
+
