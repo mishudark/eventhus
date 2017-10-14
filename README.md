@@ -202,7 +202,7 @@ commandBus.HandleCommand(account)
 
 First we generate a new `UUID` this is because is a new account and we need a unique identifier, after we created the basic structure of our `CreateAccount` command, then we only need to send it using the `commandbus` created in our config
 
-## Event consumer
+## Event consumer
 
 
 You should listen your `eventbus`, the format of the event allways is the same, only `data` key change in function of your event struct
