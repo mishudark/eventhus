@@ -3,6 +3,7 @@ package rabbitmq
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/mishudark/eventhus"
 
 	"github.com/streadway/amqp"
@@ -15,7 +16,7 @@ type Client struct {
 
 // NewClient returns a Client to acces to rabbitmq
 func NewClient(username, password, host string, port int) (*Client, error) {
-	conn, err := amqp.Dial(fmt.Sprintf("amqp:// %s:%s@%s:%d/", username, password, host, port))
+	conn, err := amqp.Dial(fmt.Sprintf("amqp://%s:%s@%s:%d/", username, password, host, port))
 	return &Client{
 		conn: conn,
 	}, err
