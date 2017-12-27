@@ -15,7 +15,7 @@ func getConfig() (eventhus.CommandBus, error) {
 	reg.Set(bank.WithdrawalPerformed{})
 
 	//eventbus
-	//rabbit, err := rabbitmq.NewClient("guest", "guest", "localhost", 5672)
+	// rabbit, err := config.RabbitMq("guest", "guest", "localhost", 5672)
 
 	return config.NewClient(
 		config.Mongo("localhost", 27017, "bank"),                    // event store
