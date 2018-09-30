@@ -17,7 +17,8 @@ type SomeEvent struct {
 var Aid ulid.ULID
 
 func TestNewClient(t *testing.T) {
-	_, cli, err := NewClient()
+	eventStore, err := NewClient()
+	cli := eventStore.(*Client)
 	defer cli.CloseClient()
 	if err != nil {
 		t.Error("expected nil, got", err)
@@ -25,8 +26,9 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestClientSave(t *testing.T) {
-	eventStore, clli, err := NewClient()
-	defer clli.CloseClient()
+	eventStore, err := NewClient()
+	cli := eventStore.(*Client)
+	defer cli.CloseClient()
 	if err != nil {
 		t.Error("expected nil, got", err)
 	}
@@ -69,7 +71,8 @@ func TestClientLoad(t *testing.T) {
 	reg := eventhus.NewEventRegister()
 	reg.Set(SomeEvent{})
 
-	eventStore, cli, err := NewClient()
+	eventStore, err := NewClient()
+	cli := eventStore.(*Client)
 	defer cli.CloseClient()
 
 	if err != nil {

@@ -37,7 +37,7 @@ type Client struct {
 }
 
 //NewClient generates a new client to access to badger db
-func NewClient() (eventhus.EventStore, *Client, error) {
+func NewClient() (eventhus.EventStore, error) {
 	// Open the Badger database located in the /tmp/badger directory.
 	// It will be created if it doesn't exist.
 	opts := badger.DefaultOptions
@@ -46,14 +46,14 @@ func NewClient() (eventhus.EventStore, *Client, error) {
 	session, err := badger.Open(opts)
 	if err != nil {
 		log.Fatal(err)
-		return nil, nil, err
+		return nil, err
 	}
 
 	cli := &Client{
 		session,
 	}
 
-	return cli, cli, nil
+	return cli, nil
 }
 
 // CloseClient closes the db connection
