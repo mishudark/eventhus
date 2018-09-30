@@ -17,7 +17,7 @@ type SomeEvent struct {
 var Aid ulid.ULID
 
 func TestNewClient(t *testing.T) {
-	eventStore, err := NewClient()
+	eventStore, err := NewClient("/tmp/badger")
 	cli := eventStore.(*Client)
 	defer cli.CloseClient()
 	if err != nil {
@@ -26,7 +26,7 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestClientSave(t *testing.T) {
-	eventStore, err := NewClient()
+	eventStore, err := NewClient("/tmp/badger")
 	cli := eventStore.(*Client)
 	defer cli.CloseClient()
 	if err != nil {
@@ -71,7 +71,7 @@ func TestClientLoad(t *testing.T) {
 	reg := eventhus.NewEventRegister()
 	reg.Set(SomeEvent{})
 
-	eventStore, err := NewClient()
+	eventStore, err := NewClient("/tmp/badger")
 	cli := eventStore.(*Client)
 	defer cli.CloseClient()
 

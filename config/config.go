@@ -5,6 +5,7 @@ import (
 	"github.com/mishudark/eventhus/commandbus/async"
 	"github.com/mishudark/eventhus/eventbus/nats"
 	"github.com/mishudark/eventhus/eventbus/rabbitmq"
+	"github.com/mishudark/eventhus/eventstore/badger"
 	"github.com/mishudark/eventhus/eventstore/mongo"
 )
 
@@ -72,6 +73,13 @@ func Nats(urls string, useTLS bool) EventBus {
 func Mongo(host string, port int, db string) EventStore {
 	return func() (eventhus.EventStore, error) {
 		return mongo.NewClient(host, port, db)
+	}
+}
+
+// Badger generates a BadgerDB implementation of EventStore
+func Badger(dbDir string) EventStore {
+	return func() (eventhus.EventStore, error) {
+		return badger.NewClient(dbDir)
 	}
 }
 
