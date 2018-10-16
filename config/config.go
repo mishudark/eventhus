@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/mishudark/eventhus"
 	"github.com/mishudark/eventhus/commandbus/async"
+	"github.com/mishudark/eventhus/eventbus/mosquitto"
 	"github.com/mishudark/eventhus/eventbus/nats"
 	"github.com/mishudark/eventhus/eventbus/rabbitmq"
 	"github.com/mishudark/eventhus/eventstore/badger"
@@ -66,6 +67,13 @@ func RabbitMq(username, password, host string, port int) EventBus {
 func Nats(urls string, useTLS bool) EventBus {
 	return func() (eventhus.EventBus, error) {
 		return nats.NewClient(urls, useTLS)
+	}
+}
+
+// Mosquitto generates a Mosquitto implementation of EventBus
+func Mosquitto(method string, host string, port int, clientID string) EventBus {
+	return func() (eventhus.EventBus, error) {
+		return mosquitto.NewClientWithPort(method, host, port, clientID)
 	}
 }
 
