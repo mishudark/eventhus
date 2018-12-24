@@ -3,8 +3,10 @@ package config
 import (
 	"github.com/mishudark/eventhus"
 	"github.com/mishudark/eventhus/commandbus/async"
+	"github.com/mishudark/eventhus/eventbus/mosquitto"
 	"github.com/mishudark/eventhus/eventbus/nats"
 	"github.com/mishudark/eventhus/eventbus/rabbitmq"
+	"github.com/mishudark/eventhus/eventstore/badger"
 	"github.com/mishudark/eventhus/eventstore/mongo"
 )
 
@@ -68,10 +70,24 @@ func Nats(urls string, useTLS bool) EventBus {
 	}
 }
 
+// Mosquitto generates a Mosquitto implementation of EventBus
+func Mosquitto(method string, host string, port int, clientID string) EventBus {
+	return func() (eventhus.EventBus, error) {
+		return mosquitto.NewClientWithPort(method, host, port, clientID)
+	}
+}
+
 // Mongo generates a MongoDB implementation of EventStore
 func Mongo(host string, port int, db string) EventStore {
 	return func() (eventhus.EventStore, error) {
 		return mongo.NewClient(host, port, db)
+	}
+}
+
+// Badger generates a BadgerDB implementation of EventStore
+func Badger(dbDir string) EventStore {
+	return func() (eventhus.EventStore, error) {
+		return badger.NewClient(dbDir)
 	}
 }
 
