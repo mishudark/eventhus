@@ -84,6 +84,7 @@ func (b *BaseAggregate) GetVersion() int {
 
 // AddEvent to the aggregate
 func (b *BaseAggregate) AddEvent(event Event) {
+	event.ID = GenerateUUID()
 	b.Changes = append(b.Changes, event)
 }
 
