@@ -47,6 +47,30 @@ func (r *Repository) PublishEvents(aggregate AggregateHandler, bucket, subset st
 	return nil
 }
 
+// PublishError to an eventBus
+func (r *Repository) PublishError(err error, command Command, bucket, subset string) error {
+	event := Event{
+		ID:            GenerateUUID(),
+		AggregateID:   command.GetAggregateID(),
+		AggregateType: command.GetAggregateType(),
+		CommandID:     command.GetID(),
+		Version:       command.GetVersion(),
+		Type:          "failure",
+	}
+
+	if failure, ok := err.(Failure); ok {
+		event.Data = failure
+	} else {
+		event.Data = struct {
+			Error error `json:"error"`
+		}{
+			Error: err,
+		}
+	}
+
+	return r.eventBus.Publish(event, bucket, "errors")
+}
+
 // SafeSave the events without check the version
 func (r *Repository) SafeSave(aggregate AggregateHandler, version int) error {
 	return r.eventStore.SafeSave(aggregate.Uncommited(), version)

@@ -27,7 +27,11 @@ type Failure struct {
 }
 
 // NewFailure returns an alert that implements an error interface
-func NewFailure(err error, typ FailureType, command Command) Failure {
+func NewFailure(err error, typ FailureType, command Command) error {
+	if err == nil {
+		return nil
+	}
+
 	return Failure{
 		CommandID:      command.GetID(),
 		CommandType:    command.GetType(),
@@ -49,5 +53,3 @@ func (f Failure) Error() string {
 		f.AggregateType,
 		f.Err)
 }
-
-var _ error = (*Failure)(nil)

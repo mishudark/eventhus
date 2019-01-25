@@ -1,12 +1,5 @@
 package eventhus
 
-import (
-	"math/rand"
-	"time"
-
-	"github.com/oklog/ulid"
-)
-
 // Command contains the methods to retreive basic info about it
 type Command interface {
 	GetType() string
@@ -59,7 +52,5 @@ func (b *BaseCommand) GetID() string {
 
 // GenerateUUID generates an uuid
 func (b *BaseCommand) GenerateUUID() {
-	t := time.Unix(1000000, 0)
-	entropy := ulid.Monotonic(rand.New(rand.NewSource(t.UnixNano())), 0)
-	b.ID = ulid.MustNew(ulid.Timestamp(t), entropy).String()
+	b.ID = GenerateUUID()
 }
