@@ -20,10 +20,11 @@ type AggregateDB struct {
 type EventDB struct {
 	Type          string      `bson:"event_type"`
 	AggregateID   string      `bson:"_id"`
+	AggregateType string      `bson:"aggregate_type"`
+	CommandID     string      `bson:"command_id"`
 	RawData       bson.Raw    `bson:"data,omitempty"`
 	data          interface{} `bson:"-"`
 	Timestamp     time.Time   `bson:"timestamp"`
-	AggregateType string      `bson:"aggregate_type"`
 	Version       int         `bson:"version"`
 }
 
@@ -70,8 +71,9 @@ func (c *Client) save(events []eventhus.Event, version int, safe bool) error {
 		eventsDB[i] = EventDB{
 			Type:          event.Type,
 			AggregateID:   event.AggregateID,
-			Timestamp:     time.Now(),
 			AggregateType: event.AggregateType,
+			CommandID:     event.CommandID,
+			Timestamp:     time.Now(),
 			Version:       1 + version + i,
 		}
 
@@ -166,6 +168,7 @@ func (c *Client) Load(aggregateID string) ([]eventhus.Event, error) {
 		events[i] = eventhus.Event{
 			AggregateID:   aggregateID,
 			AggregateType: dbEvent.AggregateType,
+			CommandID:     dbEvent.CommandID,
 			Version:       dbEvent.Version,
 			Type:          dbEvent.Type,
 			Data:          dbEvent.data,
