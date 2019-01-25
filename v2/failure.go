@@ -7,11 +7,12 @@ type FailureType string
 
 // nolint
 const (
-	FailureLoadingEventts    FailureType = "loading_events"
+	FailureLoadingEvents     FailureType = "loading_events"
 	FailureReplayingEvents   FailureType = "replying_events"
 	FailureProcessingCommand FailureType = "processing_command"
 	FailureInvalidID         FailureType = "invalid_id"
 	FailureSavingOnStorage   FailureType = "saving_on_storage"
+	FailurePublishingEvents  FailureType = "publishing_events"
 )
 
 // Failure is an error while the command is being processed
@@ -22,10 +23,11 @@ type Failure struct {
 	AggregateID    string      `json:"aggregate_id"`
 	AggregateType  string      `json:"aggregate_type"`
 	Type           FailureType `json:"type"`
+	Err            error       `json:"error"`
 }
 
 // NewFailure returns an alert that implements an error interface
-func NewFailure(typ FailureType, command Command) Failure {
+func NewFailure(err error, typ FailureType, command Command) Failure {
 	return Failure{
 		CommandID:      command.GetID(),
 		CommandType:    command.GetType(),
@@ -33,17 +35,19 @@ func NewFailure(typ FailureType, command Command) Failure {
 		AggregateID:    command.GetAggregateID(),
 		AggregateType:  command.GetAggregateType(),
 		Type:           typ,
+		Err:            err,
 	}
 }
 
-func (a *Failure) Error() string {
-	return fmt.Sprintf("[%s]: command-id=%s command-type=%s command-version=%d aggregate-id:%s aggregate_type=%s",
-		a.Type,
-		a.CommandID,
-		a.CommandType,
-		a.CommandVersion,
-		a.AggregateID,
-		a.AggregateType)
+func (f Failure) Error() string {
+	return fmt.Sprintf("[%s]: command-id=%s command-type=%s command-version=%d aggregate-id:%s aggregate_type=%s error=%s",
+		f.Type,
+		f.CommandID,
+		f.CommandType,
+		f.CommandVersion,
+		f.AggregateID,
+		f.AggregateType,
+		f.Err)
 }
 
 var _ error = (*Failure)(nil)
