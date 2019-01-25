@@ -52,11 +52,15 @@ func NewWorker(commandHandler eventhus.CommandHandlerRegister) {
 }
 
 // HandleCommand ad a job to the queue
-func (b *Bus) HandleCommand(command eventhus.Command) {
+func (b *Bus) HandleCommand(command eventhus.Command) (id string) {
+	// generate an unique identifier to trace the command
+	command.GenerateUUID()
 	go func(c eventhus.Command) {
 		workerJobQueue := <-workerPool
 		workerJobQueue <- c
 	}(command)
+
+	return command.GetID()
 }
 
 // NewBus return a bus with command handler register

@@ -59,6 +59,10 @@ func (h *Handler) Handle(command eventhus.Command) error {
 		return ErrInvalidID
 	}
 
+	// add the command id for traceability
+	aggregate.AttachCommandID(command.GetID())
+
+	// save the changes using the repository
 	if err = h.repository.Save(aggregate, version); err != nil {
 		return err
 	}

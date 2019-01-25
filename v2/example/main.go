@@ -68,13 +68,13 @@ func (v *Venue) HandleCommand(command ev.Command) error {
 
 	switch command.GetType() {
 	case "add_venue":
-		if c, ok := command.(AddVenue); ok {
+		if c, ok := command.(*AddVenue); ok {
 			event.Data = c.addVenuePayload
 		} else {
 			return fmt.Errorf("%s: can't cast to the given Command type", command.GetType())
 		}
 	case "rate_venue":
-		if c, ok := command.(RateVenue); ok {
+		if c, ok := command.(*RateVenue); ok {
 			event.Data = struct {
 				Rate int
 			}{

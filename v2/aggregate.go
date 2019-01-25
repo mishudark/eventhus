@@ -18,6 +18,7 @@ type AggregateHandler interface {
 	//ReduceHelper(aggregate AggregateHandler, event Event, commit bool)
 	HandleCommand(Command) error
 	AddEvent(Event)
+	AttachCommandID(id string)
 	Uncommited() []Event
 	ClearUncommited()
 	IncrementVersion()
@@ -99,4 +100,11 @@ func (b *BaseAggregate) GetError() error {
 // HasError returns true if it contains at least one error
 func (b *BaseAggregate) HasError() bool {
 	return b.Error != nil
+}
+
+// AttachCommandID to every change for traceability
+func (b *BaseAggregate) AttachCommandID(id string) {
+	for i := range b.Changes {
+		b.Changes[i].CommandID = id
+	}
 }
