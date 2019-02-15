@@ -1,7 +1,8 @@
 package badger
 
 import (
-	"encoding/json"
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"time"
 
@@ -9,51 +10,51 @@ import (
 	"github.com/mishudark/eventhus/v2"
 )
 
-// AggregateDB defines the collection to store the aggregate with their events
+// AggregateDB defines version and id of an aggregate
 type AggregateDB struct {
-	ID      string    `json:"_id"`
-	Version int       `json:"version"`
-	Events  []EventDB `json:"events"`
+	ID      string `badgerholdKey:"ID"`
+	Version int    `badgerholdKey:"Version"`
 }
 
 // EventDB defines the structure of the events to be stored
 type EventDB struct {
-	Type          string `json:"event_type"`
-	AggregateID   string `json:"_id"`
-	AggregateType string `json:"aggregate_type"`
-	CommandID     string `json:"command_id"`
-	RawData       []byte `json:"data,omitempty"`
-	data          interface{}
-	Timestamp     time.Time `json:"timestamp"`
-	Version       int       `json:"version"`
+	ID            string
+	Type          string
+	AggregateID   string
+	AggregateType string
+	CommandID     string
+	RawData       []byte
+	Timestamp     time.Time
+	Version       int
 }
 
-// Client for access to boltdb
+// Client for access to badger
 type Client struct {
 	session *badger.DB
 }
 
-// NewClient generates a new client for access to BadgerDB
-func NewClient(dbDir string) (eventhus.EventStore, error) {
-	// Open the Badger database located in the /tmp/badger directory.
-	// It will be created if it doesn't exist.
-	opts := badger.DefaultOptions
-	opts.Dir = dbDir
-	opts.ValueDir = dbDir
-	session, err := badger.Open(opts)
+var _ eventhus.EventStore = (*Client)(nil)
+
+// NewClient generates a new client for access to badger using badgerhold
+func NewClient(dbDir string) (*Client, error) {
+	options := badger.DefaultOptions
+	options.Dir = dbDir
+	options.ValueDir = dbDir
+
+	session, err := badger.Open(options)
 	if err != nil {
 		return nil, err
 	}
 
 	cli := &Client{
-		session,
+		session: session,
 	}
 
 	return cli, nil
 }
 
-// CloseClient closes the db connection
-func (c *Client) CloseClient() error {
+// Close db connection
+func (c *Client) Close() error {
 	return c.session.Close()
 }
 
@@ -62,86 +63,80 @@ func (c *Client) save(events []eventhus.Event, version int, safe bool) error {
 		return nil
 	}
 
-	// Build all event records, with incrementing versions starting from the
-	// original aggregate version.
-	eventsDB := make([]EventDB, len(events))
-	aggregateID := events[0].AggregateID
+	txn := c.session.NewTransaction(true)
+	defer txn.Discard()
 
-	for i, event := range events {
+	for _, event := range events {
+		raw, err := encode(event.Data)
+		if err != nil {
+			return err
+		}
 
-		// Create the event record with timestamp.
-		eventsDB[i] = EventDB{
+		item := EventDB{
+			ID:            event.ID,
 			Type:          event.Type,
 			AggregateID:   event.AggregateID,
 			AggregateType: event.AggregateType,
 			CommandID:     event.CommandID,
-			Timestamp:     time.Now(),
-			Version:       1 + version + i,
+			RawData:       raw,
 		}
 
-		// Marshal event data if there is any.
-		if event.Data != nil {
-			rawData, err := json.Marshal(event.Data)
-			if err != nil {
-				return err
-			}
-			eventsDB[i].RawData = rawData
+		blob, err := encode(item)
+		if err != nil {
+			return err
+		}
+
+		err = txn.Set([]byte(event.ID), blob)
+		if err != nil {
+			return err
 		}
 	}
 
-	// Either insert a new aggregate or append to an existing.
-	if version == 0 {
-		aggregate := AggregateDB{
-			ID:      aggregateID,
-			Version: len(eventsDB),
-			Events:  eventsDB,
-		}
+	// Now that events are saved, aggregate version needs to be updated
+	aggregate := AggregateDB{
+		ID:      events[0].AggregateID,
+		Version: version + len(events),
+	}
 
-		err := c.session.Update(func(txn *badger.Txn) error {
-			aggregateJSON, err := json.Marshal(aggregate)
-			if err != nil {
-				return err
-			}
-			return txn.Set([]byte(aggregateID), aggregateJSON)
-		})
-
+	aggregateBlob, err := encode(aggregate)
+	if err != nil {
 		return err
 	}
-	// Increment aggregate version on insert of new event record, and
-	// only insert if version of aggregate is matching (ie not changed
-	// since loading the aggregate, at least it is marked as safe insert).
 
-	err := c.session.Update(func(txn *badger.Txn) error {
-		item, err := txn.Get([]byte(aggregateID))
-		if err != nil {
+	item, err := txn.Get([]byte(aggregate.ID))
+	if version == 0 {
+		switch err {
+		case nil:
+			return fmt.Errorf("badger: %s, aggregate already exists", aggregate.ID)
+		case badger.ErrKeyNotFound:
+			err = txn.Set([]byte(aggregate.ID), aggregateBlob)
+		default: // another error differente from key not found is not desirable
 			return err
 		}
-		val, err := item.Value()
-		if err != nil {
-			return err
-		}
-
-		var aggregateDB AggregateDB
-		if err = json.Unmarshal(val, &aggregateDB); err != nil {
-			return err
-		}
-
-		if !safe && aggregateDB.Version != version {
-			return fmt.Errorf("version mismatch, aggregate.version=%d, version=%d", aggregateDB.Version, version)
-		}
-
-		aggregateDB.Version = version + len(eventsDB)
-		aggregateDB.Events = append(aggregateDB.Events, eventsDB...)
-
-		aggregateJSON, err := json.Marshal(aggregateDB)
+	} else {
+		blob, err := item.Value()
 		if err != nil {
 			return err
 		}
 
-		return txn.Set([]byte(aggregateID), aggregateJSON)
-	})
+		var payload AggregateDB
+		err = decode(blob, &payload) // nolint: vetshadow
+		if err != nil {
+			return err
+		}
 
-	return err
+		if payload.Version != version {
+			return fmt.Errorf("badger: %s, aggregate version missmatch, wanted: %d, got: %d", aggregate.ID, version, payload.Version)
+		}
+
+		err = txn.Set([]byte(aggregate.ID), aggregateBlob)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return txn.Commit(nil)
 }
 
 // SafeSave store the events without check the current version
@@ -156,46 +151,29 @@ func (c *Client) Save(events []eventhus.Event, version int) error {
 
 // Load the stored events for an AggregateID
 func (c *Client) Load(aggregateID string) ([]eventhus.Event, error) {
-	var events []eventhus.Event
+	var (
+		events   []eventhus.Event
+		eventsDB []EventDB
+	)
 
-	var aggregate AggregateDB
-
-	err := c.session.View(func(txn *badger.Txn) error {
-		item, err := txn.Get([]byte(aggregateID))
-		if err != nil {
-			return err
-		}
-
-		aggregateJSON, err := item.Value()
-		if err != nil {
-			return err
-		}
-
-		return json.Unmarshal(aggregateJSON, &aggregate)
-	})
+	err := c.session.Find(&eventsDB, hold.Where("AggregateID").Eq(aggregateID).Index("Aggregate"))
 
 	if err != nil {
-		// events is empty in this case
 		return events, err
 	}
 
-	events = make([]eventhus.Event, len(aggregate.Events))
+	events = make([]eventhus.Event, len(eventsDB))
 	register := eventhus.NewEventRegister()
 
-	for i, dbEvent := range aggregate.Events {
-		// Create an event of the correct type.
+	for i, dbEvent := range eventsDB {
 		dataType, err := register.Get(dbEvent.Type)
 		if err != nil {
 			return events, err
 		}
 
-		if err := json.Unmarshal(dbEvent.RawData, dataType); err != nil {
+		if err = encode(dbEvent.RawData, dataType); err != nil {
 			return events, err
 		}
-
-		// Set concrete event and zero out the decoded event.
-		dbEvent.data = dataType
-		dbEvent.RawData = []byte{}
 
 		// Translate dbEvent to eventhus.Event
 		events[i] = eventhus.Event{
@@ -204,9 +182,33 @@ func (c *Client) Load(aggregateID string) ([]eventhus.Event, error) {
 			CommandID:     dbEvent.CommandID,
 			Version:       dbEvent.Version,
 			Type:          dbEvent.Type,
-			Data:          dbEvent.data,
+			Data:          dataType,
 		}
 	}
 
 	return events, nil
+}
+
+func encode(interface{}) ([]byte, error) {
+	var buff bytes.Buffer
+	en := gob.NewEncoder(&buff)
+
+	err := en.Encode(value)
+	if err != nil {
+		return nil, err
+	}
+
+	return buff.Bytes(), nil
+}
+
+func decode(data []byte, value interface{}) error {
+	var buff bytes.Buffer
+	de := gob.NewDecoder(&buff)
+
+	_, err := buff.Write(data)
+	if err != nil {
+		return err
+	}
+
+	return de.Decode(value)
 }

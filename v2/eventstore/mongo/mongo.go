@@ -73,8 +73,8 @@ func (c *Client) save(events []eventhus.Event, version int, safe bool) error {
 			AggregateID:   event.AggregateID,
 			AggregateType: event.AggregateType,
 			CommandID:     event.CommandID,
-			Timestamp:     time.Now(),
-			Version:       1 + version + i,
+			Timestamp:     time.Now().UTC(),
+			Version:       event.Version,
 		}
 
 		// Marshal event data if there is any.

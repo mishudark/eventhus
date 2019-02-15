@@ -1,66 +1,69 @@
 package badger
 
 import (
-	"math/rand"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
-	"time"
 
 	"github.com/mishudark/eventhus/v2"
-	"github.com/oklog/ulid"
 )
 
-type SomeEvent struct {
+type TestEvent struct {
 	Name string
 	SKU  string
 }
 
-var Aid ulid.ULID
+var (
+	Aid = eventhus.GenerateUUID()
+	cli *Client
+)
 
-func TestNewClient(t *testing.T) {
-	eventStore, err := NewClient("/tmp/badger")
-	cli := eventStore.(*Client)
-	defer cli.CloseClient()
+func TestMain(m *testing.M) {
+	tmpDir, err := ioutil.TempDir("", "")
 	if err != nil {
-		t.Error("expected nil, got", err)
+		log.Fatalln(err)
 	}
+
+	cli, err = NewClient(tmpDir)
+	log.Println(Aid)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	result := m.Run()
+	cli.Close()
+
+	os.Exit(result)
 }
 
 func TestClientSave(t *testing.T) {
-	eventStore, err := NewClient("/tmp/badger")
-	cli := eventStore.(*Client)
-	defer cli.CloseClient()
-	if err != nil {
-		t.Error("expected nil, got", err)
-	}
-
-	ta := time.Now()
-	entropy := rand.New(rand.NewSource(ta.UnixNano()))
-	Aid = ulid.MustNew(ulid.Timestamp(ta), entropy)
-
 	events := []eventhus.Event{
 		eventhus.Event{
-			AggregateID:   Aid.String(),
+			ID:            eventhus.GenerateUUID(),
+			AggregateID:   Aid,
 			AggregateType: "order",
 			Version:       1,
-			Type:          "SomeEvent",
-			Data: SomeEvent{
+			Type:          "test_event",
+			Data: TestEvent{
 				Name: "muñeca",
 				SKU:  "123",
 			},
 		},
 		eventhus.Event{
-			AggregateID:   Aid.String(),
+			ID:            eventhus.GenerateUUID(),
+			AggregateID:   Aid,
 			AggregateType: "order",
 			Version:       1,
-			Type:          "SomeEvent",
-			Data: SomeEvent{
+			Type:          "test_event",
+			Data: TestEvent{
 				Name: "muñeca",
 				SKU:  "123",
 			},
 		},
 	}
 
-	err = eventStore.Save(events, 0)
+	err := cli.Save(events, 0)
 	if err != nil {
 		t.Error("expected nil, got", err)
 	}
@@ -69,17 +72,15 @@ func TestClientSave(t *testing.T) {
 
 func TestClientLoad(t *testing.T) {
 	reg := eventhus.NewEventRegister()
-	reg.Set(SomeEvent{})
+	reg.Set(&TestEvent{})
 
-	eventStore, err := NewClient("/tmp/badger")
-	cli := eventStore.(*Client)
-	defer cli.CloseClient()
-
+	events, err := cli.Load(Aid)
 	if err != nil {
 		t.Error("expected nil, got", err)
 	}
-	_, err = eventStore.Load(Aid.String())
-	if err != nil {
-		t.Error("expected nil, got", err)
+
+	length := len(events)
+	if length != 2 {
+		t.Errorf("[events] expected: 2, got: %d", length)
 	}
 }

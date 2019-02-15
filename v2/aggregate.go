@@ -1,5 +1,7 @@
 package eventhus
 
+import "errors"
+
 // BaseAggregate contains the basic info
 // that all aggregates should have
 type BaseAggregate struct {
@@ -14,8 +16,6 @@ type BaseAggregate struct {
 type AggregateHandler interface {
 	// LoadsFromHistory(events []Event)
 	Reduce(event Event) error
-	//Dispatch(aggregate AggregateHandler, event Event)
-	//ReduceHelper(aggregate AggregateHandler, event Event, commit bool)
 	HandleCommand(Command) error
 	AddEvent(Event)
 	AttachCommandID(id string)
@@ -56,6 +56,12 @@ func ReduceHelper(aggregate AggregateHandler, event Event, commit bool) {
 		return
 	}
 
+	// ensure that an event.Data is available
+	if event.Data == nil {
+		aggregate.AddError(errors.New("event.Data should not be nil"))
+		return
+	}
+
 	// increments the version in event and aggregate
 	aggregate.IncrementVersion()
 
@@ -63,6 +69,7 @@ func ReduceHelper(aggregate AggregateHandler, event Event, commit bool) {
 	if err := aggregate.Reduce(event); err != nil {
 		// if there is  an error, add it to the errors
 		aggregate.AddError(err)
+		return
 	}
 
 	if commit {

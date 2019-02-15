@@ -13,6 +13,7 @@ require (
 	github.com/oklog/ulid v1.3.1
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/streadway/amqp v0.0.0-20181205114330-a314942b2fd9
+	github.com/stretchr/testify v1.3.0 // indirect
 	golang.org/x/net v0.0.0-20190119204137-ed066c81e75e // indirect
 	golang.org/x/sys v0.0.0-20190124100055-b90733256f2e // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
