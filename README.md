@@ -127,7 +127,7 @@ Save events, publish it and recreate an aggregate from `event store` is made by 
 
 ## Event Store
 
-Currently it has support for `MongoDB`, `Rethinkdb` is in the scope to be add
+Currently it has support for `MongoDB` and a [mock implementation for development](#mocked-event-store). `Rethinkdb` is in the scope to be added.
 
 ```go
 import "github.com/mishudark/eventhus/config"
@@ -137,10 +137,9 @@ config.Mongo("localhost", 27017, "bank") // event store
 ```
 we create an eventstore with `config.Mongo`, it accepts `host`, `port` and `table` as arguments
 
-
 ## Event Publisher
 
-`RabbitMQ` and `Nats.io` are supported
+`RabbitMQ` and `Nats.io` are supported and a [mock implementation for development](#mocked-event-bus) is there too. 
 
 ```go
 import 	"github.com/mishudark/eventhus/config"
@@ -219,6 +218,25 @@ You should listen your `eventbus`, the format of the event allways is the same, 
 	}
 }
 ```
+
+## Mock Classes
+
+There are mock implementations for development without an actual event store or event bus.
+
+### Mocked Event Store
+
+```go
+import "github.com/mishudark/eventhus/config"
+...
+
+config.MockEventStore()
+```
+
+This requires no configuration and stores the events internally in a map, mapping the aggregate ids to an array of events.
+
+### Mocked Event Bus
+
+*Currently not implemented. This is quiet easy, you should give it a try ; )*
 
 ## Prior Art
 
