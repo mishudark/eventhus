@@ -223,6 +223,8 @@ You should listen your `eventbus`, the format of the event allways is the same, 
 
 There are mock implementations for development without an actual event store or event bus.
 
+For Details, have a look inside the `mock` packages (example: `eventhus/eventbus/mock`)
+
 ### Mocked Event Store
 
 ```go
@@ -236,7 +238,14 @@ This requires no configuration and stores the events internally in a map, mappin
 
 ### Mocked Event Bus
 
-*Currently not implemented. This is quiet easy, you should give it a try ; )*
+```go
+import "github.com/mishudark/eventhus/config"
+...
+
+config.MockEventBus()
+```
+
+This implementation simply does nothing with the events.
 
 ## Prior Art
 

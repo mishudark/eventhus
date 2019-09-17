@@ -3,11 +3,12 @@ package config
 import (
 	"github.com/mishudark/eventhus"
 	"github.com/mishudark/eventhus/commandbus/async"
+	mockBus "github.com/mishudark/eventhus/eventbus/mock"
 	"github.com/mishudark/eventhus/eventbus/mosquitto"
 	"github.com/mishudark/eventhus/eventbus/nats"
 	"github.com/mishudark/eventhus/eventbus/rabbitmq"
 	"github.com/mishudark/eventhus/eventstore/badger"
-	"github.com/mishudark/eventhus/eventstore/mock"
+	mockStore "github.com/mishudark/eventhus/eventstore/mock"
 	"github.com/mishudark/eventhus/eventstore/mongo"
 )
 
@@ -78,6 +79,13 @@ func Mosquitto(method string, host string, port int, clientID string) EventBus {
 	}
 }
 
+// Generates a mocked event bus that should only be used during development.
+func MockEventBus() EventBus {
+	return func() (eventhus.EventBus, error) {
+		return mockBus.NewClient(), nil
+	}
+}
+
 // Mongo generates a MongoDB implementation of EventStore
 func Mongo(host string, port int, db string) EventStore {
 	return func() (eventhus.EventStore, error) {
@@ -95,7 +103,7 @@ func Badger(dbDir string) EventStore {
 // Generates a mocked, in-memory event store that should only be used during development
 func MockEventStore() EventStore {
 	return func() (eventhus.EventStore, error) {
-		return mock.NewClient(), nil
+		return mockStore.NewClient(), nil
 	}
 }
 
