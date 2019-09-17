@@ -9,6 +9,15 @@ type Client struct {
 	events map[string][]eventhus.Event
 }
 
+/*
+Creates a new mocked event store.
+
+This does implementation is rather crude and does not perfectly mimic the behaviour of
+the other implementations.
+
+Therefore this mocked store should only be used to try out eventhus without
+having to connect to an event store or an event bus.
+*/
 func NewClient() *Client {
 	return &Client{
 		events: make(map[string][]eventhus.Event),
