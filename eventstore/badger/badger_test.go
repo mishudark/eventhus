@@ -2,6 +2,8 @@ package badger
 
 import (
 	"math/rand"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -16,8 +18,14 @@ type SomeEvent struct {
 
 var Aid ulid.ULID
 
+func getTestFilePath() string {
+	tmp := os.TempDir()
+	dir := filepath.Join(tmp, "badger")
+	return dir
+}
+
 func TestNewClient(t *testing.T) {
-	eventStore, err := NewClient("/tmp/badger")
+	eventStore, err := NewClient(getTestFilePath())
 	cli := eventStore.(*Client)
 	defer cli.CloseClient()
 	if err != nil {
@@ -26,7 +34,7 @@ func TestNewClient(t *testing.T) {
 }
 
 func TestClientSave(t *testing.T) {
-	eventStore, err := NewClient("/tmp/badger")
+	eventStore, err := NewClient(getTestFilePath())
 	cli := eventStore.(*Client)
 	defer cli.CloseClient()
 	if err != nil {
@@ -71,7 +79,7 @@ func TestClientLoad(t *testing.T) {
 	reg := eventhus.NewEventRegister()
 	reg.Set(SomeEvent{})
 
-	eventStore, err := NewClient("/tmp/badger")
+	eventStore, err := NewClient(getTestFilePath())
 	cli := eventStore.(*Client)
 	defer cli.CloseClient()
 
