@@ -68,7 +68,7 @@ func (r *Repository) PublishError(err error, command Command, bucket, subset str
 		}
 	}
 
-	return r.eventBus.Publish(event, bucket, "errors")
+	return r.eventBus.Publish(event, bucket, subset)
 }
 
 // SafeSave the events without check the version
