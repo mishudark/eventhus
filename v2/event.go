@@ -34,6 +34,11 @@ func GetTypeName(source interface{}) (reflect.Type, string) {
 	// we need to extract only the name without the package
 	// name currently follows the format `package.StructName`
 	parts := strings.Split(name, ".")
+
+	// in case it is an embed struct, there is not package part
+	if len(parts) == 1 {
+		return rawType, name
+	}
 	return rawType, snakeCase(parts[1])
 }
 

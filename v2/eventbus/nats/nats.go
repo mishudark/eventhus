@@ -2,10 +2,10 @@ package nats
 
 import (
 	"encoding/json"
-	"github.com/mishudark/eventhus/v2"
 	"strings"
 
-	nats "github.com/nats-io/go-nats"
+	"github.com/mishudark/eventhus/v2"
+	nats "github.com/nats-io/nats.go"
 )
 
 // Client nats

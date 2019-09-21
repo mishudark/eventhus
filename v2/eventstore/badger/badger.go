@@ -12,8 +12,8 @@ import (
 
 // AggregateDB defines version and id of an aggregate
 type AggregateDB struct {
-	ID      string `badgerholdKey:"ID"`
-	Version int    `badgerholdKey:"Version"`
+	ID      string
+	Version int
 }
 
 // EventDB defines the structure of the events to be stored
@@ -37,8 +37,7 @@ var _ eventhus.EventStore = (*Client)(nil)
 
 // NewClient generates a new client for access to badger using badgerhold
 func NewClient(dbDir string) (*Client, error) {
-	options := badger.DefaultOptions
-	options.Dir = dbDir
+	options := badger.DefaultOptions(dbDir)
 	options.ValueDir = dbDir
 
 	session, err := badger.Open(options)
@@ -63,6 +62,8 @@ func (c *Client) save(events []eventhus.Event, version int, safe bool) error {
 		return nil
 	}
 
+	aggregateID := events[0].AggregateID
+
 	txn := c.session.NewTransaction(true)
 	defer txn.Discard()
 
@@ -86,7 +87,10 @@ func (c *Client) save(events []eventhus.Event, version int, safe bool) error {
 			return err
 		}
 
-		err = txn.Set([]byte(event.ID), blob)
+		// the id contains the aggregateID as prefix
+		// aggregateID.eventID
+		id := fmt.Sprintf("%s.%s", aggregateID, event.ID)
+		err = txn.Set([]byte(id), blob)
 		if err != nil {
 			return err
 		}
@@ -114,13 +118,14 @@ func (c *Client) save(events []eventhus.Event, version int, safe bool) error {
 			return err
 		}
 	} else {
-		blob, err := item.Value()
+		var blob []byte
+		_, err := item.ValueCopy(blob)
 		if err != nil {
 			return err
 		}
 
 		var payload AggregateDB
-		err = decode(blob, &payload) // nolint: vetshadow
+		err = decode(blob, &payload)
 		if err != nil {
 			return err
 		}
@@ -136,7 +141,7 @@ func (c *Client) save(events []eventhus.Event, version int, safe bool) error {
 		return err
 	}
 
-	return txn.Commit(nil)
+	return txn.Commit()
 }
 
 // SafeSave store the events without check the current version
@@ -156,11 +161,33 @@ func (c *Client) Load(aggregateID string) ([]eventhus.Event, error) {
 		eventsDB []EventDB
 	)
 
-	err := c.session.Find(&eventsDB, hold.Where("AggregateID").Eq(aggregateID).Index("Aggregate"))
+	c.session.View(func(txn *badger.Txn) error {
+		it := txn.NewIterator(badger.DefaultIteratorOptions)
+		defer it.Close()
 
-	if err != nil {
-		return events, err
-	}
+		// prexi has the format aggregateID.
+		prefix := []byte(aggregateID + ".")
+		for it.Seek(prefix); it.ValidForPrefix(prefix); it.Next() {
+			item := it.Item()
+			err := item.Value(func(v []byte) error {
+				var event EventDB
+
+				err := decode(v, &event)
+				if err != nil {
+					return err
+				}
+
+				eventsDB = append(eventsDB, event)
+				return nil
+			})
+
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 
 	events = make([]eventhus.Event, len(eventsDB))
 	register := eventhus.NewEventRegister()
@@ -171,7 +198,7 @@ func (c *Client) Load(aggregateID string) ([]eventhus.Event, error) {
 			return events, err
 		}
 
-		if err = encode(dbEvent.RawData, dataType); err != nil {
+		if err = decode(dbEvent.RawData, dataType); err != nil {
 			return events, err
 		}
 
@@ -189,7 +216,7 @@ func (c *Client) Load(aggregateID string) ([]eventhus.Event, error) {
 	return events, nil
 }
 
-func encode(interface{}) ([]byte, error) {
+func encode(value interface{}) ([]byte, error) {
 	var buff bytes.Buffer
 	en := gob.NewEncoder(&buff)
 
