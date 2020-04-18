@@ -31,14 +31,14 @@ func (r *Repository) Load(aggregate AggregateHandler, ID string) error {
 
 // Save the events and publish it to eventbus
 func (r *Repository) Save(aggregate AggregateHandler, version int) error {
-	return r.eventStore.Save(aggregate.Uncommited(), version)
+	return r.eventStore.Save(aggregate.Uncommitted(), version)
 }
 
 // PublishEvents to an eventBus
 func (r *Repository) PublishEvents(aggregate AggregateHandler, bucket, subset string) error {
 	var err error
 
-	for _, event := range aggregate.Uncommited() {
+	for _, event := range aggregate.Uncommitted() {
 		if err = r.eventBus.Publish(event, bucket, subset); err != nil {
 			return err
 		}
@@ -49,5 +49,5 @@ func (r *Repository) PublishEvents(aggregate AggregateHandler, bucket, subset st
 
 // SafeSave the events without check the version
 func (r *Repository) SafeSave(aggregate AggregateHandler, version int) error {
-	return r.eventStore.SafeSave(aggregate.Uncommited(), version)
+	return r.eventStore.SafeSave(aggregate.Uncommitted(), version)
 }

@@ -1,6 +1,6 @@
 package eventhus
 
-// Command contains the methods to retreive basic info about it
+// Command contains the methods to retrieve basic info about it
 type Command interface {
 	GetType() string
 	GetAggregateID() string

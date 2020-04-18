@@ -34,7 +34,7 @@ func Test_MultiPublisherError_String(t *testing.T) {
 	sut.Add(errors.New("testing"))
 	sut.Add(errors.New("testing"))
 
-	e := `A few errors occured:
+	e := `A few errors occurred:
 	1) testing
 	2) testing
 	3) testing`

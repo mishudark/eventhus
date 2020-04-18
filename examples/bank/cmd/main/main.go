@@ -49,17 +49,17 @@ func main() {
 			commandBus.HandleCommand(deposit)
 			glog.Infof("account %s - deposit performed", uuid)
 
-			//3) Perform a withdrawl
+			//3) Perform a withdrawal
 			time.Sleep(time.Millisecond * 100)
-			withdrawl := bank.PerformWithdrawal{
+			withdrawal := bank.PerformWithdrawal{
 				Amount: 249,
 			}
 
-			withdrawl.AggregateID = uuid
-			withdrawl.Version = 2
+			withdrawal.AggregateID = uuid
+			withdrawal.Version = 2
 
-			commandBus.HandleCommand(withdrawl)
-			glog.Infof("account %s - withdrawl performed", uuid)
+			commandBus.HandleCommand(withdrawal)
+			glog.Infof("account %s - withdrawal performed", uuid)
 		}()
 	}
 	<-end

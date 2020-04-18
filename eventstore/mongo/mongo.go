@@ -158,7 +158,7 @@ func (c *Client) Load(aggregateID string) ([]eventhus.Event, error) {
 			return events, err
 		}
 
-		// Set conrcete event and zero out the decoded event.
+		// Set concrete event and zero out the decoded event.
 		dbEvent.data = dataType
 		dbEvent.RawData = bson.Raw{}
 

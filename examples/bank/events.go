@@ -17,5 +17,5 @@ type OwnerChanged struct {
 
 //WithdrawalPerformed event
 type WithdrawalPerformed struct {
-	Amount int `json:"ammount"`
+	Amount int `json:"amount"`
 }

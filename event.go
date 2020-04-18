@@ -35,12 +35,12 @@ type EventTypeRegister interface {
 	Events() []string
 }
 
-// EventType implements the EventyTypeRegister interface
+// EventType implements the EventTypeRegister interface
 type EventType struct {
 	sync.RWMutex
 }
 
-// NewEventRegister gets a EventyTypeRegister interface
+// NewEventRegister gets a EventTypeRegister interface
 func NewEventRegister() EventTypeRegister {
 	return &EventType{}
 }
