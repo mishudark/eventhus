@@ -15,19 +15,19 @@ type AggregateHandler interface {
 	ApplyChange(event Event)
 	ApplyChangeHelper(aggregate AggregateHandler, event Event, commit bool)
 	HandleCommand(Command) error
-	Uncommited() []Event
-	ClearUncommited()
+	Uncommitted() []Event
+	ClearUncommitted()
 	IncrementVersion()
 	GetID() string
 }
 
-// Uncommited return the events to be saved
-func (b *BaseAggregate) Uncommited() []Event {
+// Uncommitted return the events to be saved
+func (b *BaseAggregate) Uncommitted() []Event {
 	return b.Changes
 }
 
-// ClearUncommited the events
-func (b *BaseAggregate) ClearUncommited() {
+// ClearUncommitted the events
+func (b *BaseAggregate) ClearUncommitted() {
 	b.Changes = []Event{}
 }
 

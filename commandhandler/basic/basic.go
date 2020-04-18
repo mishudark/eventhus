@@ -8,7 +8,7 @@ import (
 )
 
 // ErrInvalidID missing initial event
-var ErrInvalidID = errors.New("Invalid ID, initial event missign")
+var ErrInvalidID = errors.New("Invalid ID, initial event missing")
 
 // Handler contains the info to manage commands
 type Handler struct {
@@ -44,7 +44,7 @@ func (h *Handler) Handle(command eventhus.Command) error {
 		return err
 	}
 
-	// if not contain a valid ID,  the initial event (some like createAggreagate event) is missing
+	// if not contain a valid ID,  the initial event (some like createAggregate event) is missing
 	if aggregate.GetID() == "" {
 		return ErrInvalidID
 	}

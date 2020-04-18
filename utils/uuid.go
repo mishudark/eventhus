@@ -9,7 +9,7 @@ import (
 	"github.com/oklog/ulid"
 )
 
-// UUID retunrs an unique id basend on ulid algorithm
+// UUID returns an unique id based on ULID algorithm
 func UUID() (string, error) {
 	t := time.Unix(1000000, 0)
 	entropy := make([]byte, 48)

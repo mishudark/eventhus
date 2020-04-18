@@ -14,7 +14,7 @@ type MultiPublisherError struct {
 
 // Error will produce an error message out of all errors.
 func (e MultiPublisherError) Error() string {
-	o := "A few errors occured:"
+	o := "A few errors occurred:"
 
 	for i, err := range e.Errors {
 		o = fmt.Sprintf("%s\n\t%d) %s", o, i+1, err)
